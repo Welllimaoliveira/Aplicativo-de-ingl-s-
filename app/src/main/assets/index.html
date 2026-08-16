@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#101625">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Fala Real Academy v2</title>
+<style>
+:root{--bg:#0f1424;--panel:#171f34;--panel2:#222c49;--line:#34405f;--txt:#f6f1df;--mut:#a7b0c8;--gold:#f1b54f;--green:#70d39b;--red:#ff6d7b;--blue:#64c7ff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}.hidden{display:none!important}.app{max-width:620px;margin:auto;min-height:100vh;padding:calc(10px + env(safe-area-inset-top)) 14px calc(20px + env(safe-area-inset-bottom))}
+.top{display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:5;background:rgba(15,20,36,.94);padding:8px 0}.brand{font-weight:900;font-size:20px}.brand em{color:var(--gold);font-style:normal}
+.icon,.secondary{border:1px solid var(--line);background:var(--panel2);color:var(--txt);border-radius:15px;padding:10px 12px}.primary{border:0;background:linear-gradient(135deg,var(--gold),#ffd37a);color:#171b29;font-weight:900;border-radius:17px;padding:13px 16px;box-shadow:0 5px 0 #8e662c}.wide{width:100%}
+.hero{text-align:center;padding:16px 8px 6px}.hero .e{font-size:68px}.hero h1{margin:3px 0;font-size:34px}.hero h1 em{color:var(--gold);font-style:normal}.hero p,.mut{color:var(--mut);line-height:1.45}
+.card{background:linear-gradient(180deg,var(--panel),#131a2c);border:1px solid var(--line);border-radius:22px;padding:14px;margin:10px 0}.row{display:flex;align-items:center;gap:8px}.wrap{flex-wrap:wrap}.grow{flex:1}.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-size:13px;font-weight:800}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.choice{border:1px solid var(--line);background:var(--panel2);color:var(--txt);border-radius:17px;padding:12px;text-align:left;min-height:72px}.choice.active{outline:2px solid var(--gold)}.choice b,.choice small{display:block}.choice small{color:var(--mut);margin-top:3px}
+.module{display:grid;grid-template-columns:auto 1fr auto;gap:11px;align-items:center;width:100%;border:1px solid var(--line);background:var(--panel2);color:var(--txt);border-radius:18px;padding:12px;margin:8px 0;text-align:left}.module .ico{font-size:32px}.module small{display:block;color:var(--mut)}.module .go{font-size:24px;color:var(--gold)}
+.progress{height:12px;border:1px solid var(--line);background:#0b1020;border-radius:999px;overflow:hidden;flex:1}.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--blue))}
+.lesson{min-height:calc(100vh - 28px);display:flex;flex-direction:column}.body{flex:1;display:flex;flex-direction:column;justify-content:center}.coach{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:10px 12px;margin-bottom:14px}.coach .f{font-size:31px}.coach b{font-size:14px}
+.prompt{text-align:center;font-size:25px;font-weight:900;line-height:1.2;margin:10px 0}.prompt small{display:block;font-size:13px;color:var(--mut);font-weight:700;margin-top:7px}.visual{text-align:center;font-size:72px}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}.answer{border:2px solid var(--line);background:var(--panel2);color:var(--txt);border-radius:17px;min-height:62px;padding:12px 8px;font-weight:850}.answer.ok{border-color:var(--green);background:rgba(112,211,155,.12)}.answer.bad{border-color:var(--red);background:rgba(255,109,123,.12)}
+.feedback{text-align:center;min-height:30px;margin-top:12px;font-weight:900}.good{color:var(--green)}.badtext{color:var(--red)}
+.speak{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:15px;text-align:center}.mic{width:88px;height:88px;margin:12px auto;border-radius:50%;border:3px solid var(--blue);background:#2c8bc8;font-size:36px;display:grid;place-items:center}.mic.on{animation:pulse 1s infinite}.mic.waiting{border-color:var(--gold);background:#7d642e}.mic.error{border-color:var(--red);background:#7b3038}.mic.disabled{opacity:.45;pointer-events:none}@keyframes pulse{50%{box-shadow:0 0 0 18px rgba(100,199,255,0)}}.trans{min-height:44px;border:1px dashed var(--line);background:#0b1020;color:var(--mut);border-radius:14px;padding:10px;margin:10px 0}
+.dialog{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:13px}.line{padding:10px 12px;border-radius:14px;background:var(--panel2);margin-top:8px}
+.result{text-align:center;padding-top:35px}.result .big{font-size:80px}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.stat{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:12px}.stat b{display:block;font-size:24px;color:var(--gold)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.68);z-index:30;display:flex;align-items:flex-end;justify-content:center;padding:10px}.modalbox{width:min(600px,100%);max-height:88vh;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:26px 26px 16px 16px;padding:16px}.field{width:100%;border:1px solid var(--line);background:#0b1020;color:var(--txt);border-radius:14px;padding:12px}.shop{display:grid;grid-template-columns:1fr 1fr;gap:9px}.shopitem{background:var(--panel2);border:1px solid var(--line);border-radius:17px;padding:12px;text-align:center}.shopitem .e{font-size:36px}.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;background:white;color:#151926;border-radius:999px;padding:9px 13px;font-weight:900}
+body.neon{--gold:#69e6ff;--blue:#bf7cff;--panel:#141c38;--panel2:#202a55;--line:#42518a}
+@media(max-width:390px){.grid,.answers,.shop{grid-template-columns:1fr}.hero h1{font-size:29px}}
+
+/* ===== BANCA DE REDAÇÃO ===== */
+.essay-screen{padding-bottom:28px}.essay-hero{text-align:center;padding:8px 0 4px}.essay-hero .e{font-size:58px}.essay-hero h2{margin:4px 0;font-size:28px}.essay-toolbar{display:grid;grid-template-columns:1fr 1fr;gap:9px}.essay-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.essay-tab{border:1px solid var(--line);background:var(--panel2);color:var(--txt);border-radius:14px;padding:10px;font-weight:800}.essay-tab.active{outline:2px solid var(--gold);background:#2b3557}.essay-prompt{border-left:4px solid var(--gold);background:rgba(241,181,79,.09);border-radius:0 16px 16px 0;padding:12px 13px;margin:10px 0;line-height:1.45}.essay-prompt b{display:block;margin-bottom:5px}.essay-editor{min-height:300px;resize:vertical;line-height:1.65;font-size:16px}.essay-counter{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.essay-counter span{font-size:12px;color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:5px 8px}.rubric-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.rubric{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:10px}.rubric b{display:block;color:var(--gold);font-size:20px}.score-ring{width:108px;height:108px;border-radius:50%;margin:10px auto;display:grid;place-items:center;background:conic-gradient(var(--gold) var(--pct,0%),var(--panel2) 0);position:relative}.score-ring:after{content:'';position:absolute;inset:9px;background:var(--bg);border-radius:50%}.score-ring strong{position:relative;z-index:1;font-size:30px}.review-block{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:13px;margin:10px 0}.review-block h3{margin:0 0 8px}.issue{border-left:3px solid var(--red);background:rgba(255,109,123,.08);padding:9px 11px;border-radius:0 12px 12px 0;margin:7px 0}.issue .from{color:#ffb7bd;text-decoration:line-through}.issue .to{color:var(--green);font-weight:800}.strength{border-left-color:var(--green);background:rgba(112,211,155,.08)}.priority{border-left-color:var(--gold);background:rgba(241,181,79,.08)}.corrected{white-space:pre-wrap;background:#0b1020;border:1px solid var(--line);border-radius:14px;padding:12px;line-height:1.65}.history-item{border:1px solid var(--line);background:var(--panel2);border-radius:16px;padding:11px;margin:8px 0}.history-item .score{font-size:22px;color:var(--gold);font-weight:900}.history-spark{display:flex;align-items:flex-end;gap:5px;height:80px;padding:8px 0}.history-spark i{flex:1;min-width:7px;background:linear-gradient(180deg,var(--gold),var(--blue));border-radius:5px 5px 2px 2px;opacity:.85}.banca-badge{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:6px 9px;font-size:12px;font-weight:800}.banca-local{color:var(--green)}.essay-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.copybtn{font-size:12px;padding:8px 10px}
+@media(max-width:390px){.essay-toolbar,.rubric-grid,.essay-actions{grid-template-columns:1fr}.essay-editor{min-height:260px}}
+
+
+/* ===== FALA REAL V2 ===== */
+.ai-screen{padding-bottom:26px}
+.ai-hero{text-align:center;padding:8px 4px}
+.ai-hero .e{font-size:58px}
+.ai-hero h2{margin:4px 0 2px;font-size:28px}
+.ai-config{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.backend-dot{width:9px;height:9px;border-radius:50%;display:inline-block;background:var(--red)}
+.backend-dot.ok{background:var(--green)}
+.chatlog{min-height:310px;max-height:52vh;overflow:auto;border:1px solid var(--line);background:#0b1020;border-radius:20px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.chat-empty{text-align:center;color:var(--mut);margin:auto;padding:30px 18px;line-height:1.55}
+.chat-row{display:flex}
+.chat-row.user{justify-content:flex-end}
+.chat-row.ai{justify-content:flex-start}
+.chat-bubble{max-width:88%;border-radius:17px;padding:11px 13px;line-height:1.5}
+.chat-row.user .chat-bubble{background:#eee4ca;color:#151927;border-bottom-right-radius:4px}
+.chat-row.ai .chat-bubble{background:var(--panel2);border:1px solid var(--line);border-bottom-left-radius:4px}
+.chat-meta{font-size:10px;opacity:.7;margin-top:5px}
+.chat-correction{margin-top:8px;border-left:3px solid var(--gold);padding:7px 9px;background:rgba(241,181,79,.08);border-radius:0 10px 10px 0;font-size:12px}
+.chat-input{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;margin-top:10px}
+.chat-mic{width:52px;height:52px;border-radius:50%;border:2px solid var(--blue);background:#277cad;color:#fff;font-size:23px}
+.chat-mic.on{animation:pulse 1s infinite}
+.chat-mic.error{border-color:var(--red);background:#74303b}
+.chat-send{min-width:52px;height:52px;padding:0 12px}
+.chat-status{text-align:center;color:var(--mut);font-size:12px;min-height:20px;margin-top:6px}
+.ai-report .score-ring{margin-top:4px}
+.meter{display:grid;grid-template-columns:110px 1fr 38px;gap:7px;align-items:center;margin:7px 0;font-size:12px}
+.meter-track{height:9px;border-radius:99px;background:#0b1020;overflow:hidden}
+.meter-track i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--green))}
+.word-tip{border-bottom:1px dotted var(--gold);cursor:pointer;border-radius:4px;padding:0 1px}
+.word-tip:active{background:rgba(241,181,79,.18)}
+.word-pop-title{font-size:29px;font-weight:900;margin:2px 0}
+.word-translation{font-size:21px;color:var(--gold);font-weight:900}
+.word-example{padding:10px;border-radius:13px;background:var(--panel2);margin-top:9px;line-height:1.5}
+.word-tip-note{font-size:11px;color:var(--mut);margin-top:6px}
+.ai-thinking{display:inline-flex;gap:4px;align-items:center;color:var(--mut);font-size:12px}
+.ai-thinking i{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:think 1s infinite}
+.ai-thinking i:nth-child(2){animation-delay:.18s}
+.ai-thinking i:nth-child(3){animation-delay:.36s}
+@keyframes think{50%{transform:translateY(-5px);opacity:.45}}
+.setting-status{border:1px solid var(--line);background:var(--panel2);padding:10px;border-radius:14px;margin-top:9px;font-size:12px}
+.essay-ai-actions{display:grid;grid-template-columns:1.35fr 1fr;gap:8px;margin-top:9px}
+.ai-badge{color:#92ddff}
+.ai-loading{padding:20px;text-align:center;color:var(--mut)}
+@media(max-width:390px){
+  .chat-input{grid-template-columns:auto 1fr}
+  .chat-send{grid-column:1/-1;width:100%}
+  .essay-ai-actions{grid-template-columns:1fr}
+  .meter{grid-template-columns:92px 1fr 34px}
+}
+
+</style>
+</head>
+<body><div class="app">
+<section id="home">
+<div class="hero"><div class="e">🎧</div><h1>Fala <em>Real</em> Academy</h1><p>Aulas de inglês com voz, redação, conversa livre com IA e relatório de evolução.</p></div>
+<div class="card row"><div class="grow"><b>👤 <span id="profName"></span></b><div class="mut">Progresso salvo no aparelho</div></div><button id="aiSettingsBtn" class="secondary">⚙️ IA</button><button id="profilesBtn" class="secondary">Trocar</button></div>
+<div class="card row wrap"><span class="pill">⭐ <span id="starsHome">0</span></span><span class="pill">🔥 <span id="streakHome">0</span></span><span class="pill">🏆 <span id="xpHome">0</span> XP</span><span class="pill">🎟️ <span id="ticketsHome">0</span></span></div>
+<div class="card"><h3>🎚️ Nível</h3><div id="levels" class="grid"></div></div>
+<div class="card"><h3>📚 Aulas</h3><div id="modules"></div></div>
+<div class="row wrap"><button class="secondary grow" id="reviewBtn">🎯 Revisar erros</button><button class="secondary grow" id="shopBtn">🛒 Loja</button><button class="secondary grow" id="statsBtn">📊 Progresso</button></div>
+</section>
+
+<section id="lesson" class="hidden lesson">
+<div class="top"><button id="exitLesson" class="icon">⌂</button><div class="brand">Fala <em>Real</em></div><div class="progress"><i id="bar"></i></div><button id="lifeBtn" class="icon" title="Usar vida extra">❤️+</button><button id="hintBtn" class="icon" title="Usar super dica">💡</button><span id="hearts" class="pill">❤️❤️❤️</span></div>
+<div class="body"><div class="coach"><div class="f">🧑‍🚀</div><b id="coach"></b></div><div id="content"></div><div id="feedback" class="feedback"></div></div>
+</section>
+
+<section id="result" class="hidden result">
+<div class="big">🏆</div><h2>Aula concluída!</h2><p id="resultMsg" class="mut"></p>
+<div class="stats"><div class="stat"><b id="rc">0</b>Acertos</div><div class="stat"><b id="rs">0</b>Estrelas</div><div class="stat"><b id="re">0</b>Erros</div><div class="stat"><b id="rx">0</b>XP</div></div>
+<div class="card"><h3>🎁 Recompensa</h3><div id="reward"></div></div>
+<button id="backHome" class="primary wide">Voltar às aulas</button>
+</section>
+
+
+<section id="essayScreen" class="hidden essay-screen">
+  <div class="top"><button id="essayBack" class="icon">←</button><div class="brand">Banca <em>Real</em></div><div class="grow"></div><button id="essayHistoryBtn" class="secondary">📈 Histórico</button></div>
+  <div class="essay-hero"><div class="e">✍️</div><h2>Laboratório de Redação</h2><p class="mut">Escreva em português ou inglês e receba um relatório de banca para evoluir texto após texto.</p></div>
+  <div class="card">
+    <div class="essay-toolbar">
+      <label><b>Idioma da redação</b><select id="essayLang" class="field"><option value="en">🇺🇸 Inglês</option><option value="pt">🇧🇷 Português</option></select></label>
+      <label><b>Idioma da revisão</b><select id="reviewLang" class="field"><option value="pt">🇧🇷 Explicações em português</option><option value="en">🇺🇸 Explanations in English</option></select></label>
+    </div>
+    <div class="essay-tabs"><button id="guidedTab" class="essay-tab active">🎯 Tema guiado</button><button id="freeTab" class="essay-tab">📝 Modo livre</button></div>
+    <div id="guidedArea"><label><b>Tema</b><select id="essayTopic" class="field"></select></label><div id="topicPrompt" class="essay-prompt"></div></div>
+    <label><b>Título</b><input id="essayTitle" class="field" placeholder="Dê um título para sua redação"></label>
+    <label><b>Seu texto</b><textarea id="essayText" class="field essay-editor" placeholder="Comece sua redação aqui..."></textarea></label>
+    <div class="essay-counter"><span id="wordCount">0 palavras</span><span id="paragraphCount">0 parágrafos</span><span id="sentenceCount">0 frases</span><span id="draftStatus">Rascunho local</span></div>
+    <div class="essay-actions"><button id="saveDraftBtn" class="secondary">💾 Salvar rascunho</button><button id="readEssayBtn" class="secondary">🔊 Ouvir texto</button></div>
+    <div class="essay-ai-actions">
+      <button id="reviewEssayAiBtn" class="primary">🤖 Revisar com Banca IA</button>
+      <button id="reviewEssayBtn" class="secondary">📴 Revisão local</button>
+    </div>
+    <p class="mut" style="font-size:11px;margin-bottom:0">A Banca IA avalia o texto inteiro: argumentos, gramática, ortografia, coesão, vocabulário e naturalidade. A revisão local continua disponível offline.</p>
+  </div>
+  <div id="essayReview" class="hidden"></div>
+</section>
+<div id="essayHistoryModal" class="modal hidden"><div class="modalbox"><div class="row"><h2 class="grow">📈 Evolução das redações</h2><button class="icon closeEssayHistory">✕</button></div><div id="essayHistoryBody"></div></div></div>
+
+
+<section id="aiScreen" class="hidden ai-screen">
+  <div class="top">
+    <button id="aiBack" class="icon">←</button>
+    <div class="brand">Conversa <em>Real</em></div>
+    <div class="grow"></div>
+    <button id="aiConfigBtn" class="secondary">⚙️ Conexão</button>
+  </div>
+
+  <div class="ai-hero">
+    <div class="e">🤖🎙️</div>
+    <h2>Conversa Livre com IA</h2>
+    <p class="mut">Fale em inglês. A IA responde em inglês e, no final, entrega um relatório completo do que você fez bem e do que precisa melhorar.</p>
+  </div>
+
+  <div class="card">
+    <div class="ai-config">
+      <span class="pill"><i id="backendDot" class="backend-dot"></i> <span id="backendText">IA não configurada</span></span>
+      <span class="pill">🎚️ <span id="aiLevelText">Iniciante</span></span>
+    </div>
+    <label style="display:block;margin-top:10px">
+      <b>Tema da conversa</b>
+      <select id="aiTopic" class="field">
+        <option value="free">💬 Livre</option>
+        <option value="daily">🏠 Dia a dia</option>
+        <option value="travel">✈️ Viagem</option>
+        <option value="work">💼 Trabalho</option>
+        <option value="restaurant">🍽️ Restaurante</option>
+        <option value="interview">🎤 Entrevista</option>
+        <option value="technology">💻 Tecnologia</option>
+      </select>
+    </label>
+    <div class="row" style="margin-top:9px">
+      <button id="aiStartBtn" class="primary grow">▶️ Iniciar conversa</button>
+      <button id="aiEndBtn" class="secondary" disabled>🏁 Finalizar</button>
+    </div>
+  </div>
+
+  <div id="aiChat" class="chatlog">
+    <div class="chat-empty">
+      Configure a IA e toque em <b>Iniciar conversa</b>.<br><br>
+      Você poderá falar pelo microfone ou digitar. Toque em qualquer
+      <span class="word-tip" data-word="word">word</span> para ver a tradução.
+    </div>
+  </div>
+
+  <div class="chat-input">
+    <button id="aiMicBtn" class="chat-mic" disabled>🎙️</button>
+    <input id="aiTyped" class="field" placeholder="Type in English..." disabled>
+    <button id="aiSendBtn" class="primary chat-send" disabled>Enviar</button>
+  </div>
+  <div id="aiStatus" class="chat-status"></div>
+  <div id="aiReport" class="hidden ai-report"></div>
+</section>
+
+<div id="aiSettingsModal" class="modal hidden">
+  <div class="modalbox">
+    <div class="row"><h2 class="grow">⚙️ Conexão com a IA</h2><button class="icon closeAiSettings">✕</button></div>
+    <p class="mut">A chave da IA fica no servidor. No APK você informa somente a URL HTTPS do backend e o código de acesso.</p>
+    <label><b>URL do backend</b><input id="backendUrlInput" class="field" placeholder="https://seu-backend.onrender.com"></label>
+    <label style="display:block;margin-top:8px"><b>Código de acesso</b><input id="backendTokenInput" class="field" type="password" placeholder="APP_ACCESS_TOKEN"></label>
+    <div class="row" style="margin-top:9px">
+      <button id="saveBackendBtn" class="primary grow">💾 Salvar</button>
+      <button id="testBackendBtn" class="secondary">🧪 Testar</button>
+    </div>
+    <div id="backendTestStatus" class="setting-status">Ainda não testado.</div>
+  </div>
+</div>
+
+<div id="wordTipModal" class="modal hidden">
+  <div class="modalbox">
+    <div class="row">
+      <div class="grow">
+        <div class="mut">DICA DA PALAVRA</div>
+        <div id="wordTipTitle" class="word-pop-title">WORD</div>
+      </div>
+      <button class="icon closeWordTip">✕</button>
+    </div>
+    <div id="wordTipTranslation" class="word-translation"></div>
+    <div id="wordTipExample" class="word-example"></div>
+    <div class="row" style="margin-top:10px">
+      <button id="wordTipSpeak" class="secondary grow">🔊 Ouvir</button>
+      <button id="wordTipAi" class="secondary grow">🤖 Explicar com IA</button>
+    </div>
+    <div class="word-tip-note">Toque nas palavras sublinhadas das aulas, diálogos e respostas da IA.</div>
+  </div>
+</div>
+
+<div id="profilesModal" class="modal hidden"><div class="modalbox"><div class="row"><h2 class="grow">👤 Perfis</h2><button class="icon close">✕</button></div><select id="profileSelect" class="field"></select><div class="row" style="margin-top:8px"><input id="newProfile" class="field" placeholder="Novo jogador"><button id="addProfile" class="primary">Adicionar</button></div></div></div>
+<div id="shopModal" class="modal hidden"><div class="modalbox"><div class="row"><h2 class="grow">🛒 Loja</h2><button class="icon close">✕</button></div><p class="mut">Use estrelas ganhas estudando.</p><div id="shopGrid" class="shop"></div></div></div>
+<div id="statsModal" class="modal hidden"><div class="modalbox"><div class="row"><h2 class="grow">📊 Progresso</h2><button class="icon close">✕</button></div><div id="statsBody"></div></div></div>
+<div id="toast" class="toast hidden"></div>
+</div>
+<script>
+const DATA={
+beginner:{
+vocab:[['HELLO','OLÁ','👋'],['GOODBYE','TCHAU','👋'],['PLEASE','POR FAVOR','🙏'],['THANK YOU','OBRIGADO','🙏'],['WATER','ÁGUA','💧'],['FOOD','COMIDA','🍽️'],['HOUSE','CASA','🏠'],['SCHOOL','ESCOLA','🏫'],['FRIEND','AMIGO','🧑‍🤝‍🧑'],['FAMILY','FAMÍLIA','👨‍👩‍👧‍👦'],['CAT','GATO','🐱'],['DOG','CACHORRO','🐶'],['CAR','CARRO','🚗'],['BOOK','LIVRO','📖'],['HAPPY','FELIZ','😄'],['SAD','TRISTE','😢']],
+phrases:[['How are you?','Como você está?'],['My name is Ana.','Meu nome é Ana.'],['I am fine.','Eu estou bem.'],['I like music.','Eu gosto de música.'],['I want water.','Eu quero água.'],['Where is the bathroom?','Onde fica o banheiro?'],['How much is it?','Quanto custa?'],['I do not understand.','Eu não entendo.'],['Please speak slowly.','Por favor, fale devagar.'],['Can you help me?','Você pode me ajudar?']],
+grammar:[['I ___ happy.',['am','is','are','be'],'am','Use "am" com I.'],['She ___ my friend.',['am','is','are','be'],'is','Use "is" com she.'],['They ___ at school.',['am','is','are','be'],'are','Use "are" com they.'],['I ___ pizza.',['like','likes','liked','liking'],'like','Com I, use o verbo básico.'],['He ___ soccer.',['play','plays','playing','played'],'plays','He/she/it recebe -s no presente.']]
+},
+intermediate:{
+vocab:[['MEETING','REUNIÃO','🗓️'],['TRAVEL','VIAGEM','✈️'],['HEALTHY','SAUDÁVEL','🥗'],['CHALLENGE','DESAFIO','🏆'],['IMPROVE','MELHORAR','📈'],['EXPERIENCE','EXPERIÊNCIA','🧠'],['CHOICE','ESCOLHA','🔀'],['AVAILABLE','DISPONÍVEL','✅'],['CROWDED','LOTADO','👥'],['RECOMMEND','RECOMENDAR','👍'],['DELAY','ATRASO','⏳'],['WEATHER','CLIMA','🌦️']],
+phrases:[['I have been studying English for two years.','Eu estudo inglês há dois anos.'],['Could you recommend a good restaurant?','Você poderia recomendar um bom restaurante?'],['I would like to make a reservation.','Eu gostaria de fazer uma reserva.'],['It depends on the weather.','Depende do clima.'],['I used to live near here.','Eu costumava morar perto daqui.'],['Could you explain that in another way?','Você poderia explicar isso de outra forma?']],
+grammar:[['I have lived here ___ 2020.',['for','since','during','from'],'since','Use "since" com ponto inicial.'],['If it rains, we ___ at home.',['stay','will stay','stayed','staying'],'will stay','First conditional: if + present, will + verbo.'],['She ___ already finished.',['has','have','is','was'],'has','Present perfect com she usa has.'],['I am interested ___ learning more.',['in','on','at','for'],'in','A expressão é interested in.']]
+},
+advanced:{
+vocab:[['INSIGHT','PERCEPÇÃO','💡'],['OUTCOME','RESULTADO','🎯'],['TRADE-OFF','COMPROMISSO','⚖️'],['STRAIGHTFORWARD','DIRETO','➡️'],['OVERWHELMED','SOBRECARREGADO','🤯'],['RELIABLE','CONFIÁVEL','🛡️'],['APPROACH','ABORDAGEM','🧭'],['EVIDENCE','EVIDÊNCIA','🔎'],['ASSUMPTION','SUPOSIÇÃO','🧩'],['BREAKTHROUGH','AVANÇO','🚀']],
+phrases:[['That is a fair point, but I see it differently.','É um ponto justo, mas vejo diferente.'],['The main issue is not the cost but the timing.','A principal questão não é o custo, mas o prazo.'],['From my perspective, the benefits outweigh the risks.','Na minha perspectiva, os benefícios superam os riscos.'],['There is no straightforward answer to that question.','Não há uma resposta simples para essa questão.']],
+grammar:[['Had I known, I ___ differently.',['would act','would have acted','acted','will act'],'would have acted','Had I known... would have + particípio.'],['The proposal, ___ was revised yesterday, is ready.',['that','which','what','who'],'which','Oração explicativa usa which.'],['It is essential that he ___ informed.',['is','be','was','being'],'be','Subjuntivo formal: that he be.']]
+}};
+const DIALOGUES={beginner:[['☕ Cafeteria','Hi! What would you like?',['I would like a coffee, please.','My name coffee.','Coffee want me.'],'I would like a coffee, please.'],['🏨 Hotel','Do you have a reservation?',['Yes, I have a reservation.','I reservation yes.','No speak.'],'Yes, I have a reservation.']],intermediate:[['🍽️ Restaurante','How many people?',['A table for two, please.','We are two persons table.','Two table.'],'A table for two, please.'],['✈️ Aeroporto','Your flight is delayed.',['Is there another flight available?','Have other airplane?','Why delay me?'],'Is there another flight available?']],advanced:[['💼 Reunião','I think we should launch next week.',['I see your point, but we need more time to validate the risks.','I disagree. Bad idea.','No, we cannot.'],'I see your point, but we need more time to validate the risks.'],['🎤 Entrevista','Tell me about a difficult challenge.',['One major challenge was coordinating several teams under a tight deadline.','I had challenge very difficult.','Challenges are normal.'],'One major challenge was coordinating several teams under a tight deadline.']]};
+const LEVELS=[['beginner','🌱 Iniciante','A1 • frases simples'],['intermediate','🚀 Intermediário','A2–B1 • cotidiano'],['advanced','⚡ Avançado','B2+ • naturalidade']];
+const MODULES=[['vocab','🧠','Vocabulário','Palavras e significado'],['phrases','💬','Frases úteis','Inglês do dia a dia'],['listening','🎧','Escuta','Ouça e escolha'],['speaking','🎙️','Pronúncia','Fale e compare'],['dialogue','🗣️','Diálogos','Situações reais'],['grammar','🧩','Gramática','Exercícios curtos'],['ai','🤖','Conversa com IA','Conversa livre por voz + relatório'],['essay','✍️','Redação','Temas, modo livre e Banca IA']];
+const SHOP=[['life','❤️','Vida Extra',20],['hint','💡','Super Dica',25],['ticket','🎟️','Ticket bônus',30],['theme','🌌','Tema Neon',60]];
+const KEY='fala_real_academy_v1', $=id=>document.getElementById(id), shuffle=a=>{a=[...a];for(let i=a.length-1;i;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function fresh(){return{level:'beginner',stars:0,xp:0,streak:0,best:0,tickets:0,lessons:0,correct:0,errors:0,review:[],inv:{life:0,hint:0,ticket:0,theme:0},essays:[],essayDrafts:{en:'',pt:''},essayTitles:{en:'',pt:''},conversations:[]}}
+function load(){try{let d=JSON.parse(localStorage.getItem(KEY));if(d&&d.profiles)return d}catch(e){}return{current:'Aluno',profiles:{Aluno:fresh()}}}
+let db=load(),S={profile:db.current,module:'vocab',q:[],i:0,lives:3,errQ:0,correct:0,errors:0,stars:0,xp:0,locked:false,finished:false,timer:null,current:null};
+const p=()=>db.profiles[S.profile];function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}}
+function show(id){['home','lesson','result','essayScreen','aiScreen'].forEach(x=>$(x).classList.toggle('hidden',x!==id));scrollTo(0,0)}
+function toast(t){$('toast').textContent=t;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),1700)}
+function speak(t){try{if(window.AndroidTTS&&AndroidTTS.speak){AndroidTTS.speak(t,'en-US');return}}catch(e){}if('speechSynthesis'in window){speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.88;speechSynthesis.speak(u)}}
+function render(){S.profile=db.current;ensureEssayData();ensureAIData();document.body.classList.toggle('neon',!!p().neon);$('profName').textContent=S.profile;$('starsHome').textContent=p().stars;$('streakHome').textContent=p().streak;$('xpHome').textContent=p().xp;$('ticketsHome').textContent=p().tickets;$('levels').innerHTML=LEVELS.map(l=>`<button class="choice ${p().level===l[0]?'active':''}" data-level="${l[0]}"><b>${l[1]}</b><small>${l[2]}</small></button>`).join('');document.querySelectorAll('[data-level]').forEach(b=>b.onclick=()=>{p().level=b.dataset.level;save();render()});$('modules').innerHTML=MODULES.map(m=>`<button class="module" data-module="${m[0]}"><span class="ico">${m[1]}</span><span><b>${m[2]}</b><small>${m[3]}</small></span><span class="go">›</span></button>`).join('');document.querySelectorAll('[data-module]').forEach(b=>b.onclick=()=>b.dataset.module==='essay'?openEssay():b.dataset.module==='ai'?openAIConversation():start(b.dataset.module,false))}
+function esc(s){let d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
+function make(mod,review){let lv=p().level,d=DATA[lv],q=[];if(review&&p().review.length)return shuffle(p().review).slice(0,10).map(x=>({...x,review:true}));if(mod==='vocab')shuffle(d.vocab).slice(0,10).forEach(v=>q.push({type:'choice',kind:'vocab',word:v[0],answer:v[1],icon:v[2],prompt:`O que significa "${v[0]}"?`,options:shuffle([v[1],...shuffle(d.vocab.filter(x=>x[0]!==v[0])).slice(0,3).map(x=>x[1])])}));if(mod==='phrases'||mod==='listening')shuffle(d.phrases).slice(0,10).forEach(v=>q.push({type:mod==='listening'?'listening':'choice',kind:mod,word:v[0],answer:v[1],prompt:v[0],options:shuffle([v[1],...shuffle(d.phrases.filter(x=>x[0]!==v[0])).slice(0,3).map(x=>x[1])])}));if(mod==='speaking')shuffle(d.phrases).slice(0,8).forEach(v=>q.push({type:'speaking',kind:'speaking',word:v[0],meaning:v[1],answer:v[0]}));if(mod==='grammar')shuffle(d.grammar).slice(0,10).forEach(g=>q.push({type:'grammar',kind:'grammar',prompt:g[0],options:shuffle(g[1]),answer:g[2],explanation:g[3]}));if(mod==='dialogue')shuffle(DIALOGUES[lv]).forEach(x=>q.push({type:'dialogue',kind:'dialogue',title:x[0],line:x[1],options:shuffle(x[2]),answer:x[3]}));return q}
+function start(mod,review){S.module=mod;S.q=make(mod,review);if(!S.q.length){toast('Ainda não há erros para revisar.');return}Object.assign(S,{i:0,lives:3,errQ:0,correct:0,errors:0,stars:0,xp:0,locked:false,finished:false});clearTimeout(S.timer);show('lesson');loadQ()}
+function loadQ(){if(S.finished)return;if(S.i>=S.q.length){finish();return}S.current=S.q[S.i];S.lives=3;S.errQ=0;S.locked=false;speechBusy=false;paintHearts();$('feedback').textContent='';$('bar').style.width=Math.round(S.i/S.q.length*100)+'%';$('coach').textContent={vocab:'Associe palavra e significado.',phrases:'Leia com calma.',listening:'Escute antes de responder.',speaking:'Fale em voz alta.',dialogue:'Escolha a resposta mais natural.',grammar:'Observe a estrutura.',review:'Vamos vencer esse ponto fraco.'}[S.module]||'Vamos aprender!';draw(S.current)}
+function draw(q){let c=$('content');if(['choice','grammar','listening'].includes(q.type)){c.innerHTML=`${q.icon?`<div class="visual">${q.icon}</div>`:''}<div class="prompt">${q.type==='listening'?'🔊 Ouça a frase':tipify(q.prompt)}</div>${q.type==='listening'?'<button id="listen" class="secondary wide">▶️ Ouvir novamente</button>':''}<div class="answers">${q.options.map((o,i)=>`<button class="answer" data-a="${i}">${esc(o)}</button>`).join('')}</div>`;if(q.type==='listening'){setTimeout(()=>speak(q.word),250);$('listen').onclick=()=>speak(q.word)}document.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>answer(q.options[+b.dataset.a],b))}
+if(q.type==='speaking'){c.innerHTML=`<div class="speak"><div class="mut">Diga em inglês:</div><div class="prompt">${tipify(q.word)}<small>${esc(q.meaning)}</small></div><button id="hear" class="secondary">🔊 Ouvir modelo</button><div id="mic" class="mic">🎙️</div><div id="trans" class="trans">Toque no microfone e fale.</div><button id="skipSpeech" class="secondary wide">Pular pronúncia</button></div>`;$('hear').onclick=()=>speak(q.word);$('mic').onclick=()=>recognize(q);$('skipSpeech').onclick=()=>{error(false);complete(false,'Pronúncia pulada')}}
+if(q.type==='dialogue'){c.innerHTML=`<div class="dialog"><h3>${q.title}</h3><div class="line">${tipify(q.line)}</div></div><div class="answers">${q.options.map((o,i)=>`<button class="answer" data-d="${i}">${esc(o)}</button>`).join('')}</div>`;speak(q.line);document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>answer(q.options[+b.dataset.d],b))}}
+function answer(v,b){if(S.locked)return;if(v===S.current.answer){b.classList.add('ok');complete(true,S.current.explanation||'Muito bem!')}else{b.classList.add('bad');b.disabled=true;setTimeout(()=>b.classList.remove('bad'),350);error(true)}}
+function error(canFail=true,msg='Tente novamente.'){if(S.locked)return;S.errQ++;S.errors++;S.lives=Math.max(0,S.lives-1);paintHearts();$('feedback').textContent=msg;$('feedback').className='feedback badtext';if(S.lives<=0&&canFail){S.locked=true;reviewAdd(S.current);$('feedback').textContent=`Missão falhou. Resposta: ${S.current.answer||S.current.word}`;S.timer=setTimeout(next,1000)}}
+function complete(ok,msg=''){if(S.locked)return;S.locked=true;let st=ok?(S.errQ===0?3:S.errQ===1?2:S.errQ===2?1:0):0;if(ok){S.correct++;S.stars+=st;S.xp+=10+st*3;if(S.current.review)reviewRemove(S.current)}$('feedback').textContent=(ok?'✓ ':'')+msg+(ok?' '+'⭐'.repeat(st):'');$('feedback').className='feedback '+(ok?'good':'badtext');S.timer=setTimeout(next,900)}
+function next(){clearTimeout(S.timer);if(S.finished)return;S.i++;if(S.i>=S.q.length)finish();else loadQ()}
+function key(q){return(q.kind||q.type)+'|'+(q.word||q.prompt||q.title)}function reviewAdd(q){if(!p().review.some(x=>key(x)===key(q)))p().review.push(q);save()}function reviewRemove(q){p().review=p().review.filter(x=>key(x)!==key(q))}
+function finish(){if(S.finished)return;S.finished=true;clearTimeout(S.timer);$('bar').style.width='100%';p().lessons++;p().correct+=S.correct;p().errors+=S.errors;p().stars+=S.stars;p().xp+=S.xp;if(S.correct>=Math.ceil(S.q.length*.7)){p().streak++;p().best=Math.max(p().best,p().streak);p().tickets++}else p().streak=0;save();$('rc').textContent=S.correct;$('rs').textContent=S.stars;$('re').textContent=S.errors;$('rx').textContent=S.xp;$('resultMsg').textContent=`Você concluiu ${S.q.length} desafios.`;$('reward').innerHTML=S.correct>=Math.ceil(S.q.length*.7)?`⭐ +${S.stars} &nbsp; 🎟️ +1 ticket`:`⭐ +${S.stars}<div class="mut">Faça 70% ou mais para ganhar ticket.</div>`;show('result')}
+function norm(s){return(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim()}function sim(a,b){a=norm(a);b=norm(b);let m=a.length,n=b.length;if(!m&&!n)return 1;if(!m||!n)return 0;let dp=Array.from({length:m+1},()=>Array(n+1).fill(0));for(let i=0;i<=m;i++)dp[i][0]=i;for(let j=0;j<=n;j++)dp[0][j]=j;for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)dp[i][j]=Math.min(dp[i-1][j]+1,dp[i][j-1]+1,dp[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return 1-dp[m][n]/Math.max(m,n)}
+let speechBusy=false,speechMode='lesson',lastNativeConfidence=null;
+function setMicState(state,msg){
+  const m=$('mic'),t=$('trans');
+  if(m){m.classList.remove('on','waiting','error','disabled');if(state)m.classList.add(state)}
+  if(t&&msg)t.textContent=msg;
+}
+function recognize(q){
+  speechMode='lesson';
+  if(S.locked||S.finished||speechBusy)return;
+  speechBusy=true;setMicState('waiting','Preparando o microfone...');
+  try{
+    if(window.AndroidSpeech&&typeof AndroidSpeech.startListening==='function'){
+      AndroidSpeech.startListening(q.word,String(Date.now()));
+      return;
+    }
+  }catch(e){speechBusy=false;setMicState('error','Não consegui iniciar o microfone do Android. Tente novamente.');return}
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!R){speechBusy=false;setMicState('error','Reconhecimento de voz indisponível neste navegador. No Android, use o APK do Fala Real.');return}
+  const r=new R();r.lang='en-US';r.continuous=false;r.interimResults=false;r.maxAlternatives=1;
+  r.onstart=()=>setMicState('on','Ouvindo... fale agora.');
+  r.onresult=e=>{const res=e.results&&e.results[0]&&e.results[0][0];speechBusy=false;setMicState('',res?'Processando...':'Não ouvi sua fala.');if(res)speechResult(res.transcript)};
+  r.onerror=e=>{speechBusy=false;const map={'not-allowed':'Permissão de microfone negada. Libere o microfone nas configurações do navegador.','service-not-allowed':'O serviço de reconhecimento de voz foi bloqueado.','no-speech':'Não ouvi nenhuma fala. Toque e tente novamente.','audio-capture':'O navegador não conseguiu acessar o microfone.','network':'O reconhecimento de voz precisa de conexão neste aparelho.','aborted':'Reconhecimento cancelado.'};setMicState('error',map[e.error]||'Não consegui reconhecer sua fala. Tente novamente.')};
+  r.onend=()=>{speechBusy=false;if($('mic')&&!$('mic').classList.contains('error'))setMicState('','Toque no microfone e fale.')};
+  try{r.start()}catch(e){speechBusy=false;setMicState('error','O microfone já está em uso. Aguarde um instante e tente novamente.')}
+}
+window.onNativeSpeechPermission=function(status,msg){
+  if(speechMode==='ai'){
+    if(status==='requesting'){setAIMicState('','Autorize o microfone para continuar.');return}
+    if(status==='granted'){setAIMicState('','Microfone autorizado. Preparando...');return}
+    speechBusy=false;setAIMicState('error',msg||'Permissão de microfone negada. Abra Configurações > Apps > Fala Real Academy > Permissões > Microfone.');return
+  }
+  if(status==='requesting'){setMicState('waiting',msg||'Autorize o microfone para continuar.');return}
+  if(status==='granted'){setMicState('waiting',msg||'Microfone autorizado. Preparando...');return}
+  speechBusy=false;setMicState('error',msg||'Permissão de microfone negada. Abra Configurações > Apps > Fala Real Academy > Permissões > Microfone.')
+};
+window.onNativeSpeechReady=function(id){if(speechMode==='ai')setAIMicState('on','Ouvindo... fale em inglês.');else setMicState('on','Ouvindo... fale agora.')};
+window.onNativeSpeechEnd=function(id){if(speechMode==='ai')setAIMicState('','Processando sua fala...');else setMicState('waiting','Processando sua fala...')};
+window.onNativeSpeechResult=function(id,t,confidence){speechBusy=false;lastNativeConfidence=typeof confidence==='number'?confidence:null;if(speechMode==='ai'){setAIMicState('',t?'Entendi. Enviando para a IA...':'Não ouvi sua fala.');if(t&&t.trim())handleAIUserText(t,lastNativeConfidence);else setAIMicState('error','Não ouvi nenhuma fala.')}else{setMicState('',t?'Processando...':'Não ouvi sua fala.');if(t&&t.trim())speechResult(t);else setMicState('error','Não ouvi nenhuma fala. Toque e tente novamente.')}};
+window.onNativeSpeechError=function(id,t){speechBusy=false;if(speechMode==='ai')setAIMicState('error',t||'Não consegui reconhecer sua fala. Tente novamente.');else setMicState('error',t||'Não consegui reconhecer sua fala. Tente novamente.')};
+function speechResult(t){
+  if(!S.current||S.locked)return;
+  $('mic')?.classList.remove('on','waiting','error');$('trans').textContent='Você disse: '+t;
+  let s=sim(t,S.current.word);
+  if(s>=.72)complete(true,`Pronúncia reconhecida (${Math.round(s*100)}%)`);
+  else error(true,`Ouvi "${t}". Tente novamente mais perto de: "${S.current.word}".`)
+}
+function paintHearts(){$('hearts').textContent='❤️'.repeat(S.lives)+'🤍'.repeat(Math.max(0,3-S.lives))}
+function useLife(){if(S.finished||S.locked){toast('Use durante uma questão ativa.');return}if((p().inv.life||0)<=0){toast('Você não tem Vida Extra.');return}if(S.lives>=3){toast('Seus 3 corações já estão cheios.');return}p().inv.life--;S.lives++;paintHearts();save();toast('❤️ Vida recuperada!')}
+function useHint(){if(S.finished||S.locked){toast('Use durante uma questão ativa.');return}if((p().inv.hint||0)<=0){toast('Você não tem Super Dica.');return}let buttons=[...document.querySelectorAll('.answer')].filter(b=>!b.disabled&&b.textContent.trim()!==String(S.current.answer).trim());if(buttons.length){shuffle(buttons).slice(0,Math.min(2,buttons.length)).forEach(b=>{b.disabled=true;b.style.opacity='.28'});p().inv.hint--;save();toast('💡 Opções erradas eliminadas!');return}if(S.current.word){p().inv.hint--;save();speak(S.current.word);toast('💡 Ouça o modelo novamente, mais devagar.');return}toast('A dica não está disponível nesta questão.')}
+
+
+/* ===== CONVERSA IA / DICIONÁRIO ===== */
+const BACKEND_URL_KEY='fala_real_backend_url_v2',BACKEND_TOKEN_KEY='fala_real_backend_token_v2';
+const COMMON_WORDS={
+i:'eu',you:'você / vocês',he:'ele',she:'ela',we:'nós',they:'eles / elas',it:'isso / ele / ela',
+a:'um / uma',an:'um / uma',the:'o / a / os / as',and:'e',or:'ou',but:'mas',because:'porque',
+if:'se',when:'quando',where:'onde',what:'o que / qual',who:'quem',why:'por que',how:'como',
+my:'meu / minha',your:'seu / sua',his:'dele',her:'dela',our:'nosso / nossa',their:'deles / delas',
+this:'isto / este',that:'isso / aquilo',these:'estes / estas',those:'aqueles / aquelas',
+is:'é / está',are:'são / estão',am:'sou / estou',was:'era / estava',were:'eram / estavam',
+be:'ser / estar',have:'ter',has:'tem',had:'tinha / teve',do:'fazer',does:'faz',did:'fez',
+can:'poder',could:'poderia',will:'vai / irá',would:'iria / gostaria',should:'deveria',
+not:'não',yes:'sim',no:'não',very:'muito',more:'mais',less:'menos',good:'bom',bad:'ruim',
+better:'melhor',best:'melhor',time:'tempo',day:'dia',today:'hoje',tomorrow:'amanhã',
+yesterday:'ontem',people:'pessoas',person:'pessoa',thing:'coisa',way:'maneira',
+work:'trabalho / trabalhar',home:'casa',school:'escola',learn:'aprender',learning:'aprendizado',
+english:'inglês',speak:'falar',speaking:'fala',listen:'ouvir',listening:'escuta',
+write:'escrever',writing:'escrita',read:'ler',reading:'leitura',think:'pensar',know:'saber / conhecer',
+want:'querer',need:'precisar',like:'gostar',go:'ir',come:'vir',make:'fazer / criar',get:'obter / ficar',
+take:'pegar / levar',see:'ver',look:'olhar',say:'dizer',tell:'contar / dizer',help:'ajudar',
+please:'por favor',thanks:'obrigado',thank:'agradecer',with:'com',without:'sem',for:'para / por',
+from:'de / desde',to:'para',in:'em / dentro',on:'em / sobre',at:'em / no / na',of:'de',
+about:'sobre',before:'antes',after:'depois',between:'entre',again:'novamente',always:'sempre',
+never:'nunca',sometimes:'às vezes',often:'frequentemente',really:'realmente',also:'também',
+only:'somente',first:'primeiro',last:'último',new:'novo',old:'velho / antigo',big:'grande',
+small:'pequeno',happy:'feliz',sad:'triste',important:'importante',different:'diferente',
+same:'mesmo',right:'certo / direita',wrong:'errado',question:'pergunta',answer:'resposta',
+example:'exemplo',idea:'ideia',problem:'problema',solution:'solução',food:'comida',water:'água',
+friend:'amigo',family:'família',travel:'viajar / viagem',meeting:'reunião',available:'disponível',
+weather:'clima',challenge:'desafio',improve:'melhorar',experience:'experiência',choice:'escolha',
+recommend:'recomendar',delay:'atraso',insight:'percepção',outcome:'resultado',reliable:'confiável',
+approach:'abordagem',evidence:'evidência',assumption:'suposição',breakthrough:'avanço'
+};
+let WORD_HINTS=null,currentTipWord='';
+function ensureAIData(){if(!Array.isArray(p().conversations))p().conversations=[]}
+function buildWordHints(){
+  if(WORD_HINTS)return WORD_HINTS;
+  WORD_HINTS={...COMMON_WORDS};
+  Object.values(DATA).forEach(d=>(d.vocab||[]).forEach(v=>WORD_HINTS[String(v[0]).toLowerCase()]=String(v[1]).toLowerCase()));
+  return WORD_HINTS
+}
+function backendUrl(){return(localStorage.getItem(BACKEND_URL_KEY)||'').trim().replace(/\/+$/,'')}
+function backendToken(){return(localStorage.getItem(BACKEND_TOKEN_KEY)||'').trim()}
+function backendConfigured(){return /^https:\/\//i.test(backendUrl())||/^http:\/\/localhost/i.test(backendUrl())}
+async function apiPost(path,payload){
+  let url=backendUrl();if(!url)throw new Error('Backend da IA não configurado.');
+  let headers={'Content-Type':'application/json'};if(backendToken())headers['X-App-Token']=backendToken();
+  let ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),45000);
+  try{
+    let r=await fetch(url+path,{method:'POST',headers,body:JSON.stringify(payload),signal:ctrl.signal});
+    let text=await r.text(),data;try{data=JSON.parse(text)}catch(e){data={error:text||'Resposta inválida do servidor.'}}
+    if(!r.ok)throw new Error(data.error||`Erro HTTP ${r.status}`);return data
+  }finally{clearTimeout(timer)}
+}
+async function apiGet(path){
+  let headers={};if(backendToken())headers['X-App-Token']=backendToken();
+  let r=await fetch(backendUrl()+path,{headers}),d=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(d.error||`Erro HTTP ${r.status}`);return d
+}
+function openAISettings(){
+  $('backendUrlInput').value=backendUrl();$('backendTokenInput').value=backendToken();
+  $('backendTestStatus').textContent=backendConfigured()?'Configuração salva. Toque em Testar.':'Informe a URL HTTPS do backend.';
+  $('aiSettingsModal').classList.remove('hidden')
+}
+async function testBackend(){
+  let url=$('backendUrlInput').value.trim().replace(/\/+$/,''),token=$('backendTokenInput').value.trim();
+  if(!url){$('backendTestStatus').textContent='Digite a URL do backend.';return}
+  localStorage.setItem(BACKEND_URL_KEY,url);localStorage.setItem(BACKEND_TOKEN_KEY,token);
+  $('backendTestStatus').textContent='Testando conexão...';
+  try{
+    let d=await apiGet('/health');
+    $('backendTestStatus').innerHTML=`✅ Servidor conectado • IA ${d.aiConfigured?'configurada':'SEM CHAVE'} • modelo ${esc(d.model||'')}`;
+    updateBackendBadge()
+  }catch(e){$('backendTestStatus').textContent='❌ '+e.message;updateBackendBadge()}
+}
+function saveBackend(){
+  localStorage.setItem(BACKEND_URL_KEY,$('backendUrlInput').value.trim().replace(/\/+$/,''));
+  localStorage.setItem(BACKEND_TOKEN_KEY,$('backendTokenInput').value.trim());
+  toast('⚙️ Configuração salva.');updateBackendBadge()
+}
+async function updateBackendBadge(){
+  let ok=false,label='IA não configurada';
+  if(backendConfigured()){try{let d=await apiGet('/health');ok=!!d.ok&&!!d.aiConfigured;label=ok?'IA conectada':'Servidor sem chave da IA'}catch(e){label='Servidor indisponível'}}
+  if($('backendDot'))$('backendDot').classList.toggle('ok',ok);if($('backendText'))$('backendText').textContent=label;return ok
+}
+function tipify(text){
+  if(!text)return'';buildWordHints();
+  return String(text).split(/([A-Za-z][A-Za-z'-]*)/g).map((part,i)=>i%2?`<span class="word-tip" data-word="${esc(part.toLowerCase())}">${esc(part)}</span>`:esc(part)).join('')
+}
+async function openWordTip(word){
+  currentTipWord=String(word||'').toLowerCase().replace(/[^a-z'-]/g,'');if(!currentTipWord)return;
+  let local=buildWordHints()[currentTipWord];
+  $('wordTipTitle').textContent=currentTipWord.toUpperCase();
+  $('wordTipTranslation').textContent=local||'Tradução não cadastrada localmente';
+  $('wordTipExample').innerHTML=local?`<b>${esc(currentTipWord)}</b> = ${esc(local)}<br><span class="mut">Toque em 🔊 para ouvir.</span>`:'<span class="mut">Use “Explicar com IA” para consultar esta palavra.</span>';
+  $('wordTipModal').classList.remove('hidden')
+}
+async function explainWordAI(){
+  if(!currentTipWord)return;if(!backendConfigured()){toast('Configure a IA primeiro.');openAISettings();return}
+  $('wordTipExample').textContent='Consultando a IA...';
+  try{let d=await apiPost('/api/dictionary',{word:currentTipWord});$('wordTipTranslation').textContent=d.translation||'—';$('wordTipExample').innerHTML=`${d.example?`<b>Exemplo:</b> ${tipify(d.example)}<br>`:''}${d.tipPt?`<span class="mut">${esc(d.tipPt)}</span>`:''}`}
+  catch(e){$('wordTipExample').textContent='Erro: '+e.message}
+}
+document.addEventListener('click',e=>{let w=e.target.closest('.word-tip');if(w){e.preventDefault();e.stopPropagation();openWordTip(w.dataset.word)}});
+
+let AI={active:false,thinking:false,history:[],turns:[],topic:'free',startedAt:0};
+function levelLabel(){return p().level==='beginner'?'Iniciante':p().level==='intermediate'?'Intermediário':'Avançado'}
+function openAIConversation(){
+  ensureAIData();show('aiScreen');$('aiLevelText').textContent=levelLabel();$('aiReport').classList.add('hidden');
+  if(!AI.active)$('aiChat').innerHTML='<div class="chat-empty">Toque em <b>Iniciar conversa</b>. Depois fale pelo microfone ou digite em inglês.<br><br>Toque em qualquer <span class="word-tip" data-word="word">word</span> para ver o significado.</div>';
+  updateAIControls();updateBackendBadge()
+}
+function updateAIControls(){
+  let a=AI.active,t=AI.thinking;$('aiMicBtn').disabled=!a||t;$('aiTyped').disabled=!a||t;$('aiSendBtn').disabled=!a||t;$('aiEndBtn').disabled=!a||t;$('aiStartBtn').disabled=a||t;
+  $('aiStartBtn').textContent=a?'Conversa em andamento':'▶️ Iniciar conversa'
+}
+function aiBubble(role,text,meta='',correction=null){
+  let empty=$('aiChat').querySelector('.chat-empty');if(empty)empty.remove();let row=document.createElement('div');row.className='chat-row '+role;
+  let body=role==='ai'?tipify(text):esc(text);
+  row.innerHTML=`<div class="chat-bubble"><div>${body}</div>${correction&&correction.corrected?`<div class="chat-correction"><b>💡 Melhor forma:</b> ${tipify(correction.corrected)}${correction.explanationPt?`<br><span>${esc(correction.explanationPt)}</span>`:''}</div>`:''}${meta?`<div class="chat-meta">${esc(meta)}</div>`:''}</div>`;
+  $('aiChat').appendChild(row);$('aiChat').scrollTop=$('aiChat').scrollHeight
+}
+function aiThinking(on){
+  let old=$('aiThinking');if(old)old.remove();
+  if(on){let div=document.createElement('div');div.id='aiThinking';div.className='chat-row ai';div.innerHTML='<div class="chat-bubble"><span class="ai-thinking">pensando <i></i><i></i><i></i></span></div>';$('aiChat').appendChild(div);$('aiChat').scrollTop=$('aiChat').scrollHeight}
+}
+async function startAI(){
+  if(!backendConfigured()){toast('Configure o backend da IA primeiro.');openAISettings();return}
+  if(!(await updateBackendBadge())){toast('Servidor da IA não está pronto.');return}
+  AI={active:true,thinking:false,history:[],turns:[],topic:$('aiTopic').value,startedAt:Date.now()};
+  $('aiChat').innerHTML='';$('aiReport').classList.add('hidden');updateAIControls();$('aiStatus').textContent='Conversa iniciada.';
+  try{
+    AI.thinking=true;updateAIControls();aiThinking(true);
+    let d=await apiPost('/api/conversation',{action:'start',level:p().level,topic:AI.topic,history:[]});
+    aiThinking(false);AI.thinking=false;let reply=d.reply||'Hi! What would you like to talk about today?';
+    AI.history.push({role:'model',text:reply});aiBubble('ai',reply,'Fala Real AI');speak(reply);updateAIControls()
+  }catch(e){aiThinking(false);AI.thinking=false;AI.active=false;updateAIControls();$('aiStatus').textContent='Erro: '+e.message}
+}
+function setAIMicState(state,msg){
+  let m=$('aiMicBtn');if(m){m.classList.remove('on','error');if(state==='on')m.classList.add('on');if(state==='error')m.classList.add('error')}
+  if($('aiStatus')&&msg)$('aiStatus').textContent=msg
+}
+function startAISpeech(){
+  if(!AI.active||AI.thinking||speechBusy)return;speechMode='ai';speechBusy=true;setAIMicState('','Preparando o microfone...');
+  try{if(window.AndroidSpeech&&typeof AndroidSpeech.startListening==='function'){AndroidSpeech.startListening('',String(Date.now()));return}}catch(e){speechBusy=false;setAIMicState('error','Não consegui iniciar o microfone do Android.')}
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){speechBusy=false;setAIMicState('error','Reconhecimento indisponível neste navegador. Use o APK Android.');return}
+  let r=new R();r.lang='en-US';r.continuous=false;r.interimResults=false;r.maxAlternatives=1;
+  r.onstart=()=>setAIMicState('on','Ouvindo... fale em inglês.');
+  r.onresult=e=>{let res=e.results?.[0]?.[0];speechBusy=false;if(res)handleAIUserText(res.transcript,typeof res.confidence==='number'?res.confidence:null);else setAIMicState('error','Não ouvi sua fala.')};
+  r.onerror=e=>{speechBusy=false;setAIMicState('error',e.error==='not-allowed'?'Permissão de microfone negada.':'Não consegui reconhecer sua fala.')};
+  try{r.start()}catch(e){speechBusy=false;setAIMicState('error','O microfone já está em uso.')}
+}
+async function handleAIUserText(text,confidence=null){
+  text=(text||'').trim();if(!text||!AI.active||AI.thinking)return;
+  aiBubble('user',text,confidence!=null&&confidence>=0?`confiança do reconhecimento ${Math.round(confidence*100)}%`:'');
+  AI.turns.push({user:text,confidence:confidence!=null&&confidence>=0?confidence:null});AI.history.push({role:'user',text});$('aiTyped').value='';
+  AI.thinking=true;updateAIControls();aiThinking(true);$('aiStatus').textContent='A IA está preparando a resposta...';
+  try{
+    let d=await apiPost('/api/conversation',{action:'continue',level:p().level,topic:AI.topic,history:AI.history.slice(-16),userText:text,confidence});
+    aiThinking(false);let reply=d.reply||'Could you tell me more?';AI.history.push({role:'model',text:reply});AI.turns[AI.turns.length-1].assistant=reply;AI.turns[AI.turns.length-1].correction=d.correction||null;
+    aiBubble('ai',reply,'Fala Real AI',d.correction||null);speak(reply);$('aiStatus').textContent=d.correction?.corrected?'Correção rápida disponível.':'Continue falando. Quando quiser, finalize para receber seu relatório.'
+  }catch(e){aiThinking(false);$('aiStatus').textContent='Erro: '+e.message;aiBubble('ai','I had a connection problem. Please try that again.','Falha de conexão')}
+  finally{AI.thinking=false;updateAIControls()}
+}
+async function finishAIConversation(){
+  if(!AI.active||AI.thinking)return;if(!AI.turns.length){toast('Fale pelo menos uma vez antes de finalizar.');return}
+  AI.thinking=true;updateAIControls();$('aiStatus').textContent='Gerando relatório completo...';
+  try{
+    let report=await apiPost('/api/conversation/report',{level:p().level,topic:AI.topic,turns:AI.turns,durationSeconds:Math.round((Date.now()-AI.startedAt)/1000)});
+    renderAIReport(report);ensureAIData();p().conversations.unshift({id:Date.now(),date:new Date().toISOString(),topic:AI.topic,turns:AI.turns.length,report});p().conversations=p().conversations.slice(0,30);
+    let reward=Math.max(1,Math.min(5,Math.round((report.overall||60)/20)));p().stars+=reward;p().xp+=Math.round((report.overall||60)/4);save();render();AI.active=false;$('aiStatus').textContent=`Relatório concluído • +${reward} ⭐`
+  }catch(e){$('aiStatus').textContent='Erro ao gerar relatório: '+e.message}
+  finally{AI.thinking=false;updateAIControls()}
+}
+function metricRow(label,val){
+  val=Math.max(0,Math.min(100,Number(val)||0));return `<div class="meter"><span>${esc(label)}</span><span class="meter-track"><i style="width:${val}%"></i></span><b>${Math.round(val)}</b></div>`
+}
+function renderAIReport(r){
+  let corrections=(r.corrections||[]).map(c=>`<div class="issue"><div><span class="from">${esc(c.said||'')}</span> → <span class="to">${tipify(c.better||'')}</span></div><div class="mut">${esc(c.whyPt||'')}</div></div>`).join('')||'<p class="mut">Nenhuma correção importante registrada.</p>';
+  let strengths=(r.strengths||[]).map(x=>`<div class="issue strength">${esc(x)}</div>`).join('');
+  let plan=(r.studyPlan||[]).map((x,i)=>`<div class="issue priority"><b>${i+1}.</b> ${esc(x)}</div>`).join('');
+  $('aiReport').innerHTML=`<div class="card"><span class="banca-badge ai-badge">🤖 RELATÓRIO DA CONVERSA</span><div class="score-ring" style="--pct:${r.overall||0}%"><strong>${Math.round(r.overall||0)}</strong></div><div style="text-align:center"><b>Nível estimado: ${esc(r.cefr||'—')}</b><div class="mut">${esc(r.summaryPt||'')}</div></div><div style="margin-top:12px">${metricRow('Gramática',r.grammar)}${metricRow('Vocabulário',r.vocabulary)}${metricRow('Fluência',r.fluency)}${metricRow('Naturalidade',r.naturalness)}${metricRow('Pronúncia*',r.pronunciationProxy)}</div><div class="mut" style="font-size:10px">*Pronúncia é uma estimativa baseada no reconhecimento de voz, não uma análise acústica completa.</div></div><div class="review-block"><h3>✅ O que você fez bem</h3>${strengths}</div><div class="review-block"><h3>🔎 Frases para corrigir</h3>${corrections}</div><div class="review-block"><h3>🎯 O que treinar agora</h3>${plan}</div>`;
+  $('aiReport').classList.remove('hidden');$('aiReport').scrollIntoView({behavior:'smooth',block:'start'})
+}
+
+
+/* ===== BANCA REAL / REDAÇÃO ===== */
+const ESSAY_TOPICS={
+ en:[
+  {id:'education-tech',title:'Technology in education',prompt:'Do digital tools improve learning, or can they distract students? Present your opinion with reasons and examples.',min:120,keywords:['technology','education','students','learning','digital']},
+  {id:'social-media',title:'Social media and young people',prompt:'Discuss one benefit and one risk of social media for young people. Conclude with your own position.',min:120,keywords:['social','media','young','people','benefit','risk']},
+  {id:'environment',title:'Individual actions and the environment',prompt:'Can individual habits make a meaningful difference to environmental problems? Defend your view.',min:130,keywords:['environment','individual','habits','change','people']},
+  {id:'work-home',title:'Working from home',prompt:'What are the advantages and disadvantages of working from home? Which model do you prefer and why?',min:130,keywords:['work','home','advantages','disadvantages']},
+  {id:'travel',title:'Why people should travel',prompt:'Explain how travelling can change the way people understand other cultures and themselves.',min:120,keywords:['travel','culture','people','learn']},
+  {id:'ai-life',title:'Artificial intelligence in daily life',prompt:'How should people use artificial intelligence responsibly in everyday life?',min:150,keywords:['artificial','intelligence','responsibly','people','technology']},
+  {id:'health',title:'Healthy habits',prompt:'Which daily habits have the greatest impact on physical and mental health? Explain your choices.',min:120,keywords:['health','habits','physical','mental']},
+  {id:'school-skill',title:'A skill every student should learn',prompt:'Choose one skill that schools should teach more explicitly and explain why it matters.',min:120,keywords:['school','students','skill','learn']}
+ ],
+ pt:[
+  {id:'educacao-tech',title:'Tecnologia na educação',prompt:'As ferramentas digitais melhoram a aprendizagem ou podem prejudicar a concentração? Defenda seu ponto de vista com argumentos e exemplos.',min:150,keywords:['tecnologia','educação','aprendizagem','alunos']},
+  {id:'redes',title:'Redes sociais e juventude',prompt:'Discuta benefícios e riscos das redes sociais para os jovens e apresente uma conclusão fundamentada.',min:150,keywords:['redes','sociais','jovens','benefícios','riscos']},
+  {id:'meio-ambiente',title:'Responsabilidade individual e meio ambiente',prompt:'Até que ponto atitudes individuais podem contribuir para enfrentar problemas ambientais?',min:160,keywords:['meio','ambiente','atitudes','individuais']},
+  {id:'trabalho-remoto',title:'Trabalho remoto',prompt:'Analise vantagens e desvantagens do trabalho remoto e apresente sua posição.',min:150,keywords:['trabalho','remoto','vantagens','desvantagens']},
+  {id:'ia',title:'Inteligência artificial no cotidiano',prompt:'Como a inteligência artificial pode ser utilizada de forma responsável sem reduzir a autonomia das pessoas?',min:180,keywords:['inteligência','artificial','responsável','pessoas']},
+  {id:'leitura',title:'A importância da leitura',prompt:'Explique como o hábito da leitura pode influenciar a formação crítica e o desenvolvimento pessoal.',min:150,keywords:['leitura','formação','crítica','desenvolvimento']},
+  {id:'saude',title:'Hábitos e saúde',prompt:'Quais hábitos cotidianos mais contribuem para a saúde física e mental? Argumente.',min:150,keywords:['hábitos','saúde','física','mental']},
+  {id:'escola',title:'Uma habilidade essencial na escola',prompt:'Escolha uma habilidade que deveria receber mais atenção na escola e explique sua importância para a vida adulta.',min:150,keywords:['habilidade','escola','vida','adulta']}
+ ]
+};
+let essayState={mode:'guided',lang:'en',reviewLang:'pt',topic:0,lastReview:null};
+function ensureEssayData(){let x=p();if(!Array.isArray(x.essays))x.essays=[];if(!x.essayDrafts)x.essayDrafts={en:'',pt:''};if(!x.essayTitles)x.essayTitles={en:'',pt:''}}
+function openEssay(){ensureEssayData();show('essayScreen');essayState.lang=$('essayLang').value||'en';renderEssayTopics();loadEssayDraft();updateEssayCounters();$('essayReview').classList.add('hidden')}
+function renderEssayTopics(){let arr=ESSAY_TOPICS[essayState.lang];$('essayTopic').innerHTML=arr.map((t,i)=>`<option value="${i}">${esc(t.title)}</option>`).join('');essayState.topic=Math.min(essayState.topic,arr.length-1);$('essayTopic').value=essayState.topic;renderTopicPrompt()}
+function renderTopicPrompt(){if(essayState.mode!=='guided')return;let t=ESSAY_TOPICS[essayState.lang][essayState.topic];$('topicPrompt').innerHTML=`<b>${esc(t.title)}</b>${esc(t.prompt)}<div class="mut" style="margin-top:6px">Meta sugerida: ${t.min}+ ${essayState.lang==='en'?'words':'palavras'}.</div>`}
+function loadEssayDraft(){ensureEssayData();$('essayText').value=p().essayDrafts[essayState.lang]||'';$('essayTitle').value=p().essayTitles[essayState.lang]||'';updateEssayCounters()}
+function saveEssayDraft(showToast=true){ensureEssayData();p().essayDrafts[essayState.lang]=$('essayText').value;p().essayTitles[essayState.lang]=$('essayTitle').value;save();$('draftStatus').textContent='Salvo agora';if(showToast)toast('💾 Rascunho salvo no aparelho.')}
+function wordsOf(t){return (t.trim().match(/[A-Za-zÀ-ÿ0-9'-]+/g)||[])}
+function essayMetrics(text,lang){let words=wordsOf(text),lower=words.map(w=>normWord(w,lang)),unique=new Set(lower.filter(Boolean));let sentences=(text.match(/[^.!?]+[.!?]+|[^.!?]+$/g)||[]).map(x=>x.trim()).filter(Boolean);let paragraphs=text.split(/\n\s*\n|\n/).map(x=>x.trim()).filter(Boolean);let avg=sentences.length?words.length/sentences.length:words.length;return{words:words.length,unique:unique.size,diversity:words.length?unique.size/words.length:0,sentences:sentences.length,paragraphs:paragraphs.length,avgSentence:avg}}
+function normWord(w,lang){let x=(w||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9'-]/g,'');return x}
+function updateEssayCounters(){let m=essayMetrics($('essayText').value,essayState.lang);$('wordCount').textContent=`${m.words} ${essayState.lang==='en'?'words':'palavras'}`;$('paragraphCount').textContent=`${m.paragraphs} ${essayState.lang==='en'?'paragraphs':'parágrafos'}`;$('sentenceCount').textContent=`${m.sentences} ${essayState.lang==='en'?'sentences':'frases'}`;$('draftStatus').textContent='Alterações não salvas'}
+function applyRules(text,lang){
+ let issues=[],corrected=text;
+ const add=(re,to,category,whyPt,whyEn)=>{let match;let copy=corrected;re.lastIndex=0;while((match=re.exec(copy))!==null){let replacement=typeof to==='function'?to(match):match[0].replace(new RegExp(re.source.replace(/^\\b|\\b$/g,''),re.flags.replace('g','')),to);issues.push({from:match[0],to:typeof to==='function'?to(match):replacement,category,why:essayState.reviewLang==='pt'?whyPt:whyEn});if(match[0].length===0)break}corrected=corrected.replace(re,to)};
+ if(lang==='en'){
+  add(/\bi am agree\b/gi,'I agree','grammar','Em inglês, “agree” é verbo: use “I agree”.','“Agree” is a verb, so use “I agree”.');
+  add(/\bpeople is\b/gi,'people are','agreement','“People” é plural e pede “are”.','“People” is plural and takes “are”.');
+  add(/\b(he|she) have\b/gi,m=>m[0].replace(/ have$/i,' has'),'agreement','No presente, he/she usa “has”.','In the present tense, he/she takes “has”.');
+  add(/\b(they|we|you) is\b/gi,m=>m[0].replace(/ is$/i,' are'),'agreement','Com they/we/you use “are”.','Use “are” with they/we/you.');
+  add(/\bI have (\d{1,3}) years old\b/gi,m=>`I am ${m[1]} years old`,'expression','Para idade, use “I am ... years old”.','Use “I am ... years old” for age.');
+  add(/\bmore better\b/gi,'better','comparison','“Better” já é comparativo; não use “more”.','“Better” is already comparative; do not add “more”.');
+  add(/\bdiscuss about\b/gi,'discuss','verb pattern','“Discuss” normalmente não precisa de “about”.','“Discuss” normally does not need “about”.');
+  add(/\bdepends of\b/gi,'depends on','preposition','A combinação natural é “depends on”.','The natural collocation is “depends on”.');
+  add(/\bin the other hand\b/gi,'on the other hand','connector','A expressão correta é “on the other hand”.','The fixed expression is “on the other hand”.');
+ }else{
+  add(/\bmenas\b/gi,'menos','ortografia','A forma correta é “menos”.','The correct Portuguese form is “menos”.');
+  add(/\bconcerteza\b/gi,'com certeza','ortografia','Escreva “com certeza” separado.','Write “com certeza” as two words.');
+  add(/\bhouveram\b/gi,'houve','concordância','No sentido de existir, “haver” é impessoal: “houve”.','When “haver” means “exist”, it is impersonal: use “houve”.');
+  add(/\bseje\b/gi,'seja','ortografia','A forma correta do subjuntivo é “seja”.','The correct subjunctive form is “seja”.');
+  add(/\bmais melhor\b/gi,'melhor','comparação','“Melhor” já indica comparação.','“Melhor” is already comparative.');
+  add(/\ba gente vamos\b/gi,'a gente vai','concordância','“A gente” pede verbo na 3ª pessoa do singular.','“A gente” takes third-person singular agreement.');
+  add(/\bpor causa que\b/gi,'porque','coesão','Prefira “porque” para introduzir causa em registro formal.','Use “porque” for a cause clause in formal writing.');
+ }
+ corrected=corrected.replace(/[ \t]+([,.;!?])/g,'$1').replace(/([,.;!?])([^\s\n])/g,'$1 $2').replace(/[ \t]{2,}/g,' ');
+ corrected=corrected.replace(/(^|[.!?]\s+)([a-zà-ÿ])/g,(m,a,b)=>a+b.toUpperCase());
+ return{issues,corrected}
+}
+function connectorCount(text,lang){let list=lang==='en'?['however','therefore','moreover','furthermore','because','although','for example','for instance','in addition','on the other hand','as a result','first','second','finally','in conclusion']:['porém','portanto','além disso','porque','embora','por exemplo','dessa forma','por outro lado','assim','primeiramente','em segundo lugar','finalmente','em conclusão','consequentemente','contudo'];let low=text.toLowerCase();return list.reduce((n,c)=>n+(low.includes(c)?1:0),0)}
+function repeatedWords(text,lang){let stop=new Set(lang==='en'?['the','a','an','and','or','but','to','of','in','is','are','was','were','it','that','this','for','on','with','as','i','you','we','they','he','she']:['a','o','as','os','e','ou','mas','de','do','da','dos','das','em','no','na','nos','nas','é','são','foi','para','por','com','que','um','uma','eu','você','nós','eles','ela','ele']);let count={};wordsOf(text).map(w=>normWord(w,lang)).filter(w=>w.length>3&&!stop.has(w)).forEach(w=>count[w]=(count[w]||0)+1);return Object.entries(count).filter(x=>x[1]>=4).sort((a,b)=>b[1]-a[1]).slice(0,5)}
+function rubricReview(text,lang){
+ let m=essayMetrics(text,lang),rules=applyRules(text,lang),connectors=connectorCount(text,lang),repeated=repeatedWords(text,lang),topic=essayState.mode==='guided'?ESSAY_TOPICS[lang][essayState.topic]:null;
+ let min=topic?topic.min:(lang==='en'?120:150);let task=Math.round(Math.min(20,8+12*Math.min(1,m.words/min)));
+ if(topic){let low=normWord(text,lang);let hit=topic.keywords.filter(k=>normWord(text,lang).includes(normWord(k,lang))).length;task=Math.min(20,task+Math.min(4,hit));}
+ let structure=Math.round(Math.min(15,5+(m.paragraphs>=3?6:m.paragraphs*2)+(m.sentences>=5?4:m.sentences*.7)));
+ let coherence=Math.round(Math.min(15,5+connectors*2+(m.paragraphs>=2?2:0)));coherence=Math.max(3,coherence-(repeated.length>=3?2:0));
+ let grammarRate=m.words?rules.issues.length/m.words*100:10;let grammar=Math.round(Math.max(4,20-grammarRate*5));
+ let vocab=Math.round(Math.min(15,5+m.diversity*12+(m.avgSentence>=8?2:0)));if(repeated.length)vocab=Math.max(4,vocab-repeated.length);
+ let mechanics=15;let noEnd=(text.trim()&&!/[.!?]$/.test(text.trim()))?1:0;let lowerStarts=(text.match(/(?:^|[.!?]\s+)[a-zà-ÿ]/g)||[]).length;mechanics=Math.max(5,15-rules.issues.filter(i=>i.category==='ortografia').length*2-noEnd*2-lowerStarts);
+ let scores={task,structure,coherence,grammar,vocab,mechanics};let total=Object.values(scores).reduce((a,b)=>a+b,0);total=Math.max(0,Math.min(100,total));
+ let cefr=lang==='en'?(total<35?'A1':total<50?'A2':total<65?'B1':total<80?'B2':total<92?'C1':'C2'):(total<40?'Inicial':total<60?'Em desenvolvimento':total<75?'Competente':total<90?'Avançado':'Excelente');
+ let strengths=[],priorities=[];
+ if(grammar>=17)strengths.push(lang==='en'?'Good grammatical control.':'Bom controle gramatical.');if(coherence>=12)strengths.push(lang==='en'?'Ideas are connected with useful transitions.':'As ideias estão bem conectadas por articuladores.');if(vocab>=12)strengths.push(lang==='en'?'Vocabulary shows useful variety.':'O vocabulário apresenta boa variedade.');if(structure>=12)strengths.push(lang==='en'?'The text has a clear organizational structure.':'O texto apresenta organização clara.');if(!strengths.length)strengths.push(lang==='en'?'You completed a full draft — now use the priorities below to strengthen it.':'Você concluiu um rascunho completo; agora use as prioridades abaixo para fortalecê-lo.');
+ if(m.words<min)priorities.push((lang==='en'?`Develop the text to at least about ${min} words.`:`Desenvolva o texto até aproximadamente ${min} palavras.`));if(m.paragraphs<3)priorities.push(lang==='en'?'Use at least three paragraphs: introduction, development and conclusion.':'Organize em pelo menos três parágrafos: introdução, desenvolvimento e conclusão.');if(connectors<2)priorities.push(lang==='en'?'Add connectors such as however, therefore, for example and in conclusion.':'Use mais conectivos, como “porém”, “portanto”, “por exemplo” e “em conclusão”.');if(rules.issues.length)priorities.push(lang==='en'?`Review the ${rules.issues.length} language pattern(s) identified by the examiner.`:`Revise os ${rules.issues.length} padrão(ões) linguístico(s) apontados pela banca.`);if(repeated.length)priorities.push((lang==='en'?'Reduce repetition of: ':'Reduza a repetição de: ')+repeated.map(x=>`${x[0]} (${x[1]}x)`).join(', '));if(priorities.length<3)priorities.push(lang==='en'?'Add a concrete example or evidence to support your main point.':'Inclua um exemplo concreto ou evidência para sustentar o argumento principal.');
+ return{metrics:m,issues:rules.issues,corrected:rules.corrected,connectors,repeated,scores,total,level:cefr,strengths,priorities,minWords:min}
+}
+function labelReview(key){let pt={task:'Conteúdo / atendimento ao tema',structure:'Estrutura e organização',coherence:'Coerência e coesão',grammar:'Gramática',vocab:'Vocabulário',mechanics:'Ortografia e pontuação'};let en={task:'Task / content',structure:'Structure & organization',coherence:'Coherence & cohesion',grammar:'Grammar',vocab:'Vocabulary',mechanics:'Spelling & punctuation'};return(essayState.reviewLang==='pt'?pt:en)[key]}
+function reviewEssay(){saveEssayDraft(false);let text=$('essayText').value.trim();if(wordsOf(text).length<30){toast(essayState.reviewLang==='pt'?'Escreva pelo menos 30 palavras para a banca avaliar.':'Write at least 30 words for the examiner to assess.');return}let r=rubricReview(text,essayState.lang);essayState.lastReview=r;let title=$('essayTitle').value.trim()||(essayState.mode==='guided'?ESSAY_TOPICS[essayState.lang][essayState.topic].title:(essayState.lang==='en'?'Free writing':'Redação livre'));let hash=normWord(text,essayState.lang).slice(0,4000);let seen=p().essays.some(e=>e.hash===hash);let reward=r.total>=90?5:r.total>=80?4:r.total>=70?3:r.total>=60?2:1;if(!seen){p().stars+=reward;p().xp+=Math.round(r.total/4)}p().essays.unshift({id:Date.now(),date:new Date().toISOString(),title,lang:essayState.lang,reviewLang:essayState.reviewLang,mode:essayState.mode,topic:essayState.mode==='guided'?essayState.topic:null,text,hash,score:r.total,level:r.level,scores:r.scores,words:r.metrics.words,issues:r.issues.length,corrected:r.corrected,reward:seen?0:reward});p().essays=p().essays.slice(0,50);save();renderEssayReview(r,title,seen?0:reward);render();}
+function renderEssayReview(r,title,reward){let labels=essayState.reviewLang==='pt'?{report:'Relatório da banca',level:'Nível estimado',words:'palavras',connectors:'conectivos identificados',issues:'pontos de correção',strengths:'Pontos fortes',priorities:'Prioridades para a próxima redação',corrections:'Correções detectadas',corrected:'Versão revisada automaticamente',reward:'Recompensa',copy:'Copiar versão corrigida'}:{report:'Examiner report',level:'Estimated level',words:'words',connectors:'connectors found',issues:'correction points',strengths:'Strengths',priorities:'Priorities for the next essay',corrections:'Detected corrections',corrected:'Automatically revised version',reward:'Reward',copy:'Copy corrected version'};let rub=Object.entries(r.scores).map(([k,v])=>`<div class="rubric"><span class="mut">${labelReview(k)}</span><b>${v}/${k==='task'||k==='grammar'?20:15}</b></div>`).join('');let issues=r.issues.length?r.issues.map(i=>`<div class="issue"><div><span class="from">${esc(i.from)}</span> → <span class="to">${esc(i.to)}</span></div><div class="mut">${esc(i.why)}</div></div>`).join(''):`<p class="mut">${essayState.reviewLang==='pt'?'Nenhum dos padrões formais monitorados foi detectado.':'None of the monitored formal error patterns was detected.'}</p>`;$('essayReview').innerHTML=`<div class="card"><span class="banca-badge banca-local">🧑‍⚖️ BANCA LOCAL • OFFLINE</span><h2>${esc(title)}</h2><div class="score-ring" style="--pct:${r.total}%"><strong>${r.total}</strong></div><div style="text-align:center"><b>${labels.level}: ${r.level}</b><div class="mut">${r.metrics.words} ${labels.words} • ${r.metrics.paragraphs} ${essayState.reviewLang==='pt'?'parágrafos':'paragraphs'} • ${r.connectors} ${labels.connectors} • ${r.issues.length} ${labels.issues}</div></div><div class="rubric-grid" style="margin-top:12px">${rub}</div><div class="review-block" style="margin-top:12px;text-align:left"><h3>📐 ${essayState.reviewLang==='pt'?'Indicadores técnicos':'Technical indicators'}</h3><div class="mut">${essayState.reviewLang==='pt'?'Diversidade lexical':'Lexical diversity'}: <b>${Math.round(r.metrics.diversity*100)}%</b> • ${essayState.reviewLang==='pt'?'Média de palavras por frase':'Average words per sentence'}: <b>${r.metrics.avgSentence.toFixed(1)}</b> • ${essayState.reviewLang==='pt'?'Conectivos':'Connectors'}: <b>${r.connectors}</b> • ${essayState.reviewLang==='pt'?'Repetições relevantes':'Relevant repetitions'}: <b>${r.repeated.length}</b> • ${essayState.reviewLang==='pt'?'Meta de extensão':'Length target'}: <b>${r.minWords}+</b></div></div>${reward?`<p style="text-align:center;color:var(--gold);font-weight:900">⭐ ${labels.reward}: +${reward}</p>`:''}</div><div class="review-block"><h3>✅ ${labels.strengths}</h3>${r.strengths.map(x=>`<div class="issue strength">${esc(x)}</div>`).join('')}</div><div class="review-block"><h3>🎯 ${labels.priorities}</h3>${r.priorities.map((x,i)=>`<div class="issue priority"><b>${i+1}.</b> ${esc(x)}</div>`).join('')}</div><div class="review-block"><h3>🔎 ${labels.corrections}</h3>${issues}</div><div class="review-block"><div class="row"><h3 class="grow">📝 ${labels.corrected}</h3><button id="copyCorrected" class="secondary copybtn">📋 ${labels.copy}</button></div><div class="corrected" id="correctedText">${esc(r.corrected)}</div></div>`;$('essayReview').classList.remove('hidden');$('copyCorrected').onclick=()=>copyText(r.corrected);$('essayReview').scrollIntoView({behavior:'smooth',block:'start'})}
+function copyText(t){if(navigator.clipboard&&location.protocol!=='file:')navigator.clipboard.writeText(t).then(()=>toast('📋 Copiado.')).catch(()=>fallbackCopy(t));else fallbackCopy(t)}function fallbackCopy(t){let a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');toast('📋 Copiado.')}catch(e){toast('Selecione e copie o texto manualmente.')}a.remove()}
+function openEssayHistory(){ensureEssayData();let list=p().essays;if(!list.length){$('essayHistoryBody').innerHTML='<p class="mut">Nenhuma redação revisada ainda.</p>'}else{let recent=[...list].reverse().slice(-12);let bars=recent.map(e=>`<i title="${e.score}" style="height:${Math.max(8,e.score)}%"></i>`).join('');$('essayHistoryBody').innerHTML=`<div class="review-block"><h3>📊 Tendência das últimas redações</h3><div class="history-spark">${bars}</div><div class="mut">Média: ${Math.round(list.reduce((a,e)=>a+e.score,0)/list.length)}/100 • Melhor: ${Math.max(...list.map(e=>e.score))}/100 • Total: ${list.length}</div></div>`+list.map(e=>`<div class="history-item"><div class="row"><div class="grow"><b>${esc(e.title)}</b><div class="mut">${new Date(e.date).toLocaleDateString()} • ${e.lang==='en'?'🇺🇸 Inglês':'🇧🇷 Português'} • ${e.words} palavras • nível ${e.level}</div></div><span class="score">${e.score}</span></div><button class="secondary wide" data-load-essay="${e.id}" style="margin-top:7px">Abrir redação</button></div>`).join('');document.querySelectorAll('[data-load-essay]').forEach(b=>b.onclick=()=>loadEssayHistory(+b.dataset.loadEssay))}$('essayHistoryModal').classList.remove('hidden')}
+function loadEssayHistory(id){let e=p().essays.find(x=>x.id===id);if(!e)return;$('essayHistoryModal').classList.add('hidden');essayState.lang=e.lang;essayState.reviewLang=e.reviewLang||'pt';essayState.mode=e.mode||'free';$('essayLang').value=e.lang;$('reviewLang').value=essayState.reviewLang;$('guidedArea').classList.toggle('hidden',essayState.mode!=='guided');$('guidedTab').classList.toggle('active',essayState.mode==='guided');$('freeTab').classList.toggle('active',essayState.mode==='free');if(e.topic!=null){essayState.topic=e.topic;renderEssayTopics()}$('essayTitle').value=e.title;$('essayText').value=e.text;updateEssayCounters();if(e.source==='ai'&&e.aiReport)renderAIEssayReview(e.aiReport,e.title);else{let r=rubricReview(e.text,e.lang);renderEssayReview(r,e.title,0)}}
+
+async function reviewEssayAI(){
+  ensureEssayData();let text=$('essayText').value.trim();
+  if(wordsOf(text).length<25){toast('Escreva pelo menos 25 palavras antes da Banca IA.');return}
+  if(!backendConfigured()){toast('Configure o backend da IA primeiro.');openAISettings();return}
+  let topic=essayState.mode==='guided'?ESSAY_TOPICS[essayState.lang][essayState.topic]:null;
+  let title=$('essayTitle').value.trim()||(topic?.title||(essayState.lang==='en'?'Free writing':'Redação livre'));
+  $('essayReview').innerHTML='<div class="card ai-loading"><div class="ai-thinking">Banca IA lendo sua redação <i></i><i></i><i></i></div><p>Avaliando conteúdo, argumentos, gramática, ortografia, coesão, vocabulário e naturalidade.</p></div>';
+  $('essayReview').classList.remove('hidden');
+  try{
+    let r=await apiPost('/api/essay/review',{language:essayState.lang,reviewLanguage:essayState.reviewLang,title,text,mode:essayState.mode,topic:topic?{title:topic.title,prompt:topic.prompt,minWords:topic.min}:null,learnerLevel:p().level});
+    saveAIEssayReview(r,title,text);renderAIEssayReview(r,title)
+  }catch(e){
+    $('essayReview').innerHTML=`<div class="card"><h3>❌ A Banca IA não respondeu</h3><p class="mut">${esc(e.message)}</p><button class="secondary wide" onclick="reviewEssay()">📴 Usar revisão local agora</button></div>`
+  }
+}
+function saveAIEssayReview(r,title,text){
+  let hash=normWord(text,essayState.lang).slice(0,4000),seen=p().essays.some(e=>e.hash===hash&&e.source==='ai');
+  let reward=r.score>=90?5:r.score>=80?4:r.score>=70?3:r.score>=60?2:1;if(!seen){p().stars+=reward;p().xp+=Math.round((r.score||60)/4)}
+  p().essays.unshift({id:Date.now(),date:new Date().toISOString(),title,lang:essayState.lang,reviewLang:essayState.reviewLang,mode:essayState.mode,topic:essayState.mode==='guided'?essayState.topic:null,text,hash,score:r.score||0,level:r.cefr||'—',scores:r.criteria||{},words:wordsOf(text).length,issues:(r.corrections||[]).length,corrected:r.correctedText||text,reward:seen?0:reward,source:'ai',aiReport:r});
+  p().essays=p().essays.slice(0,50);save();render()
+}
+function renderAIEssayReview(r,title){
+  let max={task:20,organization:15,coherence:15,grammar:20,vocabulary:15,spelling:15},criteria=r.criteria||{};
+  let rub=Object.keys(max).map(k=>`<div class="rubric"><span class="mut">${labelReview(k)}</span><b>${Math.round(criteria[k]||0)}/${max[k]}</b></div>`).join('');
+  let corr=(r.corrections||[]).map(i=>`<div class="issue"><div><span class="from">${esc(i.original||'')}</span> → <span class="to">${tipify(i.corrected||'')}</span></div><div class="mut">${esc((essayState.reviewLang==='en'?i.explanationEn:i.explanationPt)||i.explanation||'')}</div></div>`).join('')||'<p class="mut">Nenhum erro relevante apontado.</p>';
+  let strengths=(r.strengths||[]).map(x=>`<div class="issue strength">${esc(x)}</div>`).join('');
+  let priorities=(r.priorities||[]).map((x,i)=>`<div class="issue priority"><b>${i+1}.</b> ${esc(x)}</div>`).join('');
+  $('essayReview').innerHTML=`<div class="card"><span class="banca-badge ai-badge">🤖 BANCA IA</span><h2>${esc(title)}</h2><div class="score-ring" style="--pct:${r.score||0}%"><strong>${Math.round(r.score||0)}</strong></div><div style="text-align:center"><b>${essayState.lang==='en'?`CEFR estimado: ${esc(r.cefr||'—')}`:'Avaliação em português'}</b><div class="mut">${esc((essayState.reviewLang==='en'?r.summaryEn:r.summaryPt)||r.summary||'')}</div></div><div class="rubric-grid" style="margin-top:12px">${rub}</div></div><div class="review-block"><h3>✅ ${essayState.reviewLang==='en'?'Strengths':'Pontos fortes'}</h3>${strengths}</div><div class="review-block"><h3>🎯 ${essayState.reviewLang==='en'?'Priorities':'Prioridades para melhorar'}</h3>${priorities}</div><div class="review-block"><h3>🔎 ${essayState.reviewLang==='en'?'Corrections':'Correções gramaticais e ortográficas'}</h3>${corr}</div><div class="review-block"><div class="row"><h3 class="grow">📝 ${essayState.reviewLang==='en'?'Corrected text':'Texto corrigido'}</h3><button id="copyAICorrected" class="secondary copybtn">📋 Copiar</button></div><div class="mut" style="margin-bottom:8px">${essayState.lang==='en'?'A versão abaixo permanece em inglês.':'A versão abaixo permanece em português.'}</div><div class="corrected">${esc(r.correctedText||'')}</div></div>`;
+  $('copyAICorrected').onclick=()=>copyText(r.correctedText||'');$('essayReview').classList.remove('hidden')
+}
+
+$('essayBack').onclick=()=>{saveEssayDraft(false);show('home');render()};$('essayLang').onchange=()=>{saveEssayDraft(false);essayState.lang=$('essayLang').value;renderEssayTopics();loadEssayDraft()};$('reviewLang').onchange=()=>essayState.reviewLang=$('reviewLang').value;$('essayTopic').onchange=()=>{essayState.topic=+$('essayTopic').value;renderTopicPrompt()};$('guidedTab').onclick=()=>{essayState.mode='guided';$('guidedTab').classList.add('active');$('freeTab').classList.remove('active');$('guidedArea').classList.remove('hidden');renderTopicPrompt()};$('freeTab').onclick=()=>{essayState.mode='free';$('freeTab').classList.add('active');$('guidedTab').classList.remove('active');$('guidedArea').classList.add('hidden')};$('essayText').addEventListener('input',()=>{updateEssayCounters();clearTimeout(window.__draftTimer);window.__draftTimer=setTimeout(()=>saveEssayDraft(false),700)});$('essayTitle').addEventListener('input',()=>{clearTimeout(window.__titleTimer);window.__titleTimer=setTimeout(()=>saveEssayDraft(false),700)});$('saveDraftBtn').onclick=()=>saveEssayDraft(true);$('readEssayBtn').onclick=()=>{let t=$('essayText').value.trim();if(!t){toast('Escreva algo primeiro.');return}try{if(window.AndroidTTS&&AndroidTTS.speak){AndroidTTS.speak(t,essayState.lang==='en'?'en-US':'pt-BR');return}}catch(e){}if('speechSynthesis'in window){speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang=essayState.lang==='en'?'en-US':'pt-BR';u.rate=.9;speechSynthesis.speak(u)}};$('reviewEssayBtn').onclick=reviewEssay;$('reviewEssayAiBtn').onclick=reviewEssayAI;$('essayHistoryBtn').onclick=openEssayHistory;document.querySelectorAll('.closeEssayHistory').forEach(b=>b.onclick=()=>$('essayHistoryModal').classList.add('hidden'));
+
+$('lifeBtn').onclick=useLife;$('hintBtn').onclick=useHint;
+function profiles(){let n=Object.keys(db.profiles);$('profileSelect').innerHTML=n.map(x=>`<option ${x===db.current?'selected':''}>${esc(x)}</option>`).join('');$('profilesModal').classList.remove('hidden')}function shop(){$('shopGrid').innerHTML=SHOP.map(i=>`<div class="shopitem"><div class="e">${i[1]}</div><b>${i[2]}</b><div>⭐ ${i[3]}</div><button class="secondary wide" data-buy="${i[0]}">${p().stars>=i[3]?'Comprar':`Faltam ${i[3]-p().stars} ⭐`}</button></div>`).join('');$('shopModal').classList.remove('hidden');document.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>buy(b.dataset.buy))}
+function buy(id){let i=SHOP.find(x=>x[0]===id);if(id==='theme'&&p().neon){toast('Tema Neon já está equipado.');return}if(p().stars<i[3]){toast(`Faltam ${i[3]-p().stars} estrelas.`);return}p().stars-=i[3];p().inv[id]=(p().inv[id]||0)+1;if(id==='ticket')p().tickets++;if(id==='theme')p().neon=true;save();toast(i[1]+' comprado!');shop();render()}
+function stats(){ensureEssayData();let avg=p().essays.length?Math.round(p().essays.reduce((a,e)=>a+e.score,0)/p().essays.length):0;$('statsBody').innerHTML=`<div class="stats"><div class="stat"><b>${p().lessons}</b>Aulas</div><div class="stat"><b>${p().correct}</b>Acertos</div><div class="stat"><b>${p().errors}</b>Erros</div><div class="stat"><b>${p().review.length}</b>Revisar</div><div class="stat"><b>${p().best}</b>Melhor sequência</div><div class="stat"><b>${p().xp}</b>XP</div><div class="stat"><b>${p().essays.length}</b>Redações</div><div class="stat"><b>${avg}</b>Média da banca</div></div>`;$('statsModal').classList.remove('hidden')}
+
+$('aiSettingsBtn').onclick=openAISettings;
+$('aiConfigBtn').onclick=openAISettings;
+$('saveBackendBtn').onclick=saveBackend;
+$('testBackendBtn').onclick=testBackend;
+document.querySelectorAll('.closeAiSettings').forEach(b=>b.onclick=()=>$('aiSettingsModal').classList.add('hidden'));
+document.querySelectorAll('.closeWordTip').forEach(b=>b.onclick=()=>$('wordTipModal').classList.add('hidden'));
+$('wordTipSpeak').onclick=()=>speak(currentTipWord);
+$('wordTipAi').onclick=explainWordAI;
+$('aiBack').onclick=()=>{speechBusy=false;AI.active=false;show('home');render()};
+$('aiStartBtn').onclick=startAI;
+$('aiEndBtn').onclick=finishAIConversation;
+$('aiMicBtn').onclick=startAISpeech;
+$('aiSendBtn').onclick=()=>handleAIUserText($('aiTyped').value,null);
+$('aiTyped').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();handleAIUserText($('aiTyped').value,null)}});
+
+$('profilesBtn').onclick=profiles;$('profileSelect').onchange=()=>{db.current=$('profileSelect').value;S.profile=db.current;save();render()};$('addProfile').onclick=()=>{let n=$('newProfile').value.trim();if(!n)return;if(!db.profiles[n])db.profiles[n]=fresh();db.current=n;S.profile=n;save();$('profilesModal').classList.add('hidden');render()};document.querySelectorAll('.close').forEach(b=>b.onclick=()=>b.closest('.modal').classList.add('hidden'));$('exitLesson').onclick=()=>{clearTimeout(S.timer);speechBusy=false;S.finished=true;show('home');render()};$('backHome').onclick=()=>{show('home');render()};$('reviewBtn').onclick=()=>start('review',true);$('shopBtn').onclick=shop;$('statsBtn').onclick=stats;render();if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+</script></body></html>
