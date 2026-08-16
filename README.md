@@ -53,24 +53,22 @@ README.md
 5. Baixe o artefato `Fala-Real-v2-APK`.
 6. Dentro estará `app-debug.apk`.
 
-## Backend da IA
+## Backend da IA no Vercel
 
-A chave da IA não fica no APK.
-
-No Render (ou outro servidor Node), aponte para a pasta `backend/` e configure:
+A chave da IA não fica no site, no APK nem no GitHub. As funções da pasta `api/`
+leem os segredos diretamente das variáveis de ambiente do Vercel:
 
 - `GEMINI_API_KEY`
 - `APP_ACCESS_TOKEN`
 - `GEMINI_MODEL=gemini-3.6-flash`
 
-O arquivo `render.yaml` já está incluído.
-
-Depois do deploy, copie a URL HTTPS.
+No site publicado pelo Vercel, o endereço do backend é detectado automaticamente.
+No APK, informe `https://aplicativo-de-ingl-s.vercel.app`.
 
 No aplicativo:
 
 1. Tela inicial → `⚙️ IA`
-2. Cole a URL do backend.
+2. No APK, cole a URL do backend. No site, deixe o endereço automático.
 3. Digite o mesmo `APP_ACCESS_TOKEN`.
 4. Toque `🧪 Testar`.
 

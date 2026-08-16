@@ -212,7 +212,7 @@ body.neon{--gold:#69e6ff;--blue:#bf7cff;--panel:#141c38;--panel2:#202a55;--line:
   <div class="modalbox">
     <div class="row"><h2 class="grow">⚙️ Conexão com a IA</h2><button class="icon closeAiSettings">✕</button></div>
     <p class="mut">A chave da IA fica no servidor. No APK você informa somente a URL HTTPS do backend e o código de acesso.</p>
-    <label><b>URL do backend</b><input id="backendUrlInput" class="field" placeholder="https://seu-backend.onrender.com"></label>
+    <label><b>URL do backend</b><input id="backendUrlInput" class="field" placeholder="Automática no site; informe apenas no APK"></label>
     <label style="display:block;margin-top:8px"><b>Código de acesso</b><input id="backendTokenInput" class="field" type="password" placeholder="APP_ACCESS_TOKEN"></label>
     <div class="row" style="margin-top:9px">
       <button id="saveBackendBtn" class="primary grow">💾 Salvar</button>
@@ -402,7 +402,11 @@ function buildWordHints(){
   Object.values(DATA).forEach(d=>(d.vocab||[]).forEach(v=>WORD_HINTS[String(v[0]).toLowerCase()]=String(v[1]).toLowerCase()));
   return WORD_HINTS
 }
-function backendUrl(){return(localStorage.getItem(BACKEND_URL_KEY)||'').trim().replace(/\/+$/,'')}
+function backendUrl(){
+  const saved=(localStorage.getItem(BACKEND_URL_KEY)||'').trim().replace(/\/+$/,'');
+  if(saved)return saved;
+  return location.protocol==='https:'?location.origin.replace(/\/+$/,''):''
+}
 function backendToken(){return(localStorage.getItem(BACKEND_TOKEN_KEY)||'').trim()}
 function backendConfigured(){return /^https:\/\//i.test(backendUrl())||/^http:\/\/localhost/i.test(backendUrl())}
 async function apiPost(path,payload){
@@ -422,7 +426,7 @@ async function apiGet(path){
 }
 function openAISettings(){
   $('backendUrlInput').value=backendUrl();$('backendTokenInput').value=backendToken();
-  $('backendTestStatus').textContent=backendConfigured()?'Configuração salva. Toque em Testar.':'Informe a URL HTTPS do backend.';
+  $('backendTestStatus').textContent=backendConfigured()?'Backend detectado. Informe o código de acesso e toque em Testar.':'No APK, informe a URL HTTPS do backend.';
   $('aiSettingsModal').classList.remove('hidden')
 }
 async function testBackend(){
