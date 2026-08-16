@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#101625">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="auth.css">
 <title>Fala Real Academy</title>
 <style>
 :root{--bg:#0f1424;--panel:#171f34;--panel2:#222c49;--line:#34405f;--txt:#f6f1df;--mut:#a7b0c8;--gold:#f1b54f;--green:#70d39b;--red:#ff6d7b;--blue:#64c7ff}
@@ -732,4 +733,4 @@ $('aiSendBtn').onclick=()=>handleAIUserText($('aiTyped').value,null);
 $('aiTyped').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();handleAIUserText($('aiTyped').value,null)}});
 
 $('profilesBtn').onclick=profiles;$('profileSelect').onchange=()=>{db.current=$('profileSelect').value;S.profile=db.current;save();render()};$('addProfile').onclick=()=>{let n=$('newProfile').value.trim();if(!n)return;if(!db.profiles[n])db.profiles[n]=fresh();db.current=n;S.profile=n;save();$('profilesModal').classList.add('hidden');render()};document.querySelectorAll('.close').forEach(b=>b.onclick=()=>b.closest('.modal').classList.add('hidden'));$('exitLesson').onclick=()=>{clearTimeout(S.timer);speechBusy=false;S.finished=true;show('home');render()};$('backHome').onclick=()=>{show('home');render()};$('reviewBtn').onclick=()=>start('review',true);$('shopBtn').onclick=shop;$('statsBtn').onclick=stats;render();if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
-</script></body></html>
+</script><script type="module" src="auth.js"></script></body></html>

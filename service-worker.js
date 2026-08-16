@@ -1,5 +1,5 @@
-const CACHE='fala-real-v4-ai-vercel';
-const CORE=['./','./index.html','./manifest.webmanifest','./vocabulary-bank.js'];
+const CACHE='fala-real-v5-auth';
+const CORE=['./','./index.html','./manifest.webmanifest','./vocabulary-bank.js','./auth.css','./auth.js'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{
