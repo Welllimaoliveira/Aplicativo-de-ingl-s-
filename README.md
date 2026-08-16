@@ -20,6 +20,16 @@ A configuração de segurança e microfone está em `vercel.json`. O navegador s
 - Destaque e rolagem progressiva conforme a leitura.
 - Controles de reprodução, navegação e velocidade.
 
+## Universo de Palavras
+
+- Banco offline com 3.600 palavras em inglês.
+- 20 temas, incluindo trabalho, viagens, negócios, arte, tecnologia, engenharia, saúde, finanças e educação.
+- Treino misto, escuta, pronúncia e reconhecimento temático.
+- Histórico por perfil que reduz repetições recentes.
+- Quantidade e dificuldade ajustadas ao nível escolhido.
+
+As frequências usadas para formar o banco foram derivadas de [hermitdave/FrequencyWords](https://github.com/hermitdave/FrequencyWords), cujo conteúdo é disponibilizado sob CC BY-SA 4.0. A seleção temática e a integração pedagógica são próprias deste projeto.
+
 ## Estrutura
 
 ```text

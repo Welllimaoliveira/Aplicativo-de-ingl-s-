@@ -6,3 +6,4 @@ backend/.env
 .DS_Store
 .vercel/
 *.log
+soletra-hero-arcade/

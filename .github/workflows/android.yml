@@ -1,4 +1,4 @@
-name: Gerar APK Fala Real v3
+name: Gerar APK Fala Real v4
 on:
   workflow_dispatch:
 permissions:
@@ -29,5 +29,5 @@ jobs:
         run: gradle assembleDebug
       - uses: actions/upload-artifact@v4
         with:
-          name: Fala-Real-v3-APK
+          name: Fala-Real-v4-APK
           path: app/build/outputs/apk/debug/app-debug.apk
