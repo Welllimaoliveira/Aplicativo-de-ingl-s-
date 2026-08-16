@@ -1,6 +1,24 @@
-# Fala Real Academy v2 — Android + IA
+# Fala Real Academy v3 — Web + Android + IA
 
-Projeto pronto para subir na raiz do repositório GitHub.
+Aplicativo de inglês pronto para funcionar no navegador pela Vercel e como aplicativo Android.
+
+## Site na Vercel
+
+O site está na raiz do repositório (`index.html`) e não exige etapa de build. Ao importar o repositório na Vercel, mantenha:
+
+- Framework Preset: `Other`
+- Build Command: vazio
+- Output Directory: `.`
+
+A configuração de segurança e microfone está em `vercel.json`. O navegador solicita o microfone na primeira utilização e reutiliza essa autorização enquanto ela permanecer liberada para o domínio.
+
+## Modo História
+
+- Histórias para níveis iniciante, intermediário e avançado.
+- Tradução em português acima de cada trecho em inglês.
+- Narração automática em inglês.
+- Destaque e rolagem progressiva conforme a leitura.
+- Controles de reprodução, navegação e velocidade.
 
 ## Estrutura
 

@@ -4,3 +4,5 @@
 *.iml
 backend/.env
 .DS_Store
+.vercel/
+*.log

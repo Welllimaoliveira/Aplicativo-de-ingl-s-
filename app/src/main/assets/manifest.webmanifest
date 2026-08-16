@@ -1,0 +1,10 @@
+{
+  "name": "Fala Real Academy",
+  "short_name": "Fala Real",
+  "description": "Inglês com voz, histórias bilíngues, exercícios e conversação.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0f1424",
+  "theme_color": "#101625",
+  "lang": "pt-BR"
+}
