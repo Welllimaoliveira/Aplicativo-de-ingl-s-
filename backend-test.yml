@@ -1,0 +1,25 @@
+name: Testar Backend
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'backend/**'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Sintaxe
+        run: node --check backend/server.js
+      - name: Smoke test
+        run: |
+          MOCK_AI=1 APP_ACCESS_TOKEN=test PORT=8787 node backend/server.js >/tmp/fala.log 2>&1 &
+          PID=$!
+          sleep 1
+          curl -fsS http://127.0.0.1:8787/health
+          curl -fsS -H 'Content-Type: application/json' -H 'X-App-Token: test' -d '{"action":"start","level":"beginner","topic":"free"}' http://127.0.0.1:8787/api/conversation
+          curl -fsS -H 'Content-Type: application/json' -H 'X-App-Token: test' -d '{"language":"en","text":"I am agree with technology.","reviewLanguage":"pt"}' http://127.0.0.1:8787/api/essay/review
+          kill $PID
