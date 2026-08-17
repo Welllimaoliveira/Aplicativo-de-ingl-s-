@@ -1,7 +1,7 @@
 import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.57.4?bundle';
 
-const SUPABASE_URL='https://pjphvwjbmmatkakvmeql.supabase.co';
-const SUPABASE_KEY='sb_publishable_VeMeYx1ZSGHOx55tWZntDw_NAsMN_KX';
+const SUPABASE_URL='https://jptxomplvexsfyynmxju.supabase.co';
+const SUPABASE_KEY='sb_publishable_IiBMmoxgFSC2z_cAifv5Ow_kSXj3wWF';
 const isSoletra=/soletra/i.test(document.title);
 const APP_NAME=isSoletra?'Soletra Hero Arcade':'Fala Real Academy';
 const APP_ICON=isSoletra?'🧩':'🗣️';
