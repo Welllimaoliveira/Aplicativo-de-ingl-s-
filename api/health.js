@@ -8,6 +8,8 @@ export default function handler(req, res) {
     ok: true,
     aiConfigured: Boolean(process.env.GEMINI_API_KEY),
     model: MODEL,
+    speechConfigured: Boolean(process.env.GEMINI_API_KEY),
+    speechModel: process.env.GEMINI_TTS_MODEL || "gemini-3.1-flash-tts-preview",
     platform: "vercel"
   });
 }

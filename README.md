@@ -61,6 +61,7 @@ leem os segredos diretamente das variáveis de ambiente do Vercel:
 - `GEMINI_API_KEY`
 - `APP_ACCESS_TOKEN`
 - `GEMINI_MODEL=gemini-3.6-flash`
+- `GEMINI_TTS_MODEL=gemini-3.1-flash-tts-preview` (opcional; valor padrão)
 
 No site publicado pelo Vercel, o endereço do backend é detectado automaticamente.
 No APK, informe `https://aplicativo-de-ingl-s.vercel.app`.
@@ -71,6 +72,15 @@ No aplicativo:
 2. No APK, cole a URL do backend. No site, deixe o endereço automático.
 3. Digite o mesmo `APP_ACCESS_TOKEN`.
 4. Toque `🧪 Testar`.
+
+### Voz natural Gemini
+
+O endpoint `/api/speech` gera a narração no servidor. A chave não é enviada ao
+navegador. Em `⚙️ IA`, escolha a voz e ative a narração Gemini. Se a API estiver
+indisponível, o aplicativo usa automaticamente a voz nativa do aparelho.
+
+Depois de incluir ou alterar `GEMINI_API_KEY` ou `GEMINI_TTS_MODEL` no Vercel,
+faça um novo deployment. Nunca coloque a chave no HTML, APK ou GitHub.
 
 ## Conversa IA
 
