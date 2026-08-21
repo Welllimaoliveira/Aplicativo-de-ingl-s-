@@ -49,10 +49,26 @@ as $$
   );
 $$;
 
+create or replace function public.current_user_is_master()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists(
+    select 1 from public.profiles
+    where id=auth.uid() and is_active and role='master'
+  );
+$$;
+
+-- A lista de usuarios cadastrados (aba "Usuarios") so pode ser vista pelo Master.
+-- Staff (admin) continua enxergando apenas o proprio perfil, nao a lista inteira.
 drop policy if exists "education profile own or staff read" on public.profiles;
-create policy "education profile own or staff read" on public.profiles
+drop policy if exists "education profile own or master read" on public.profiles;
+create policy "education profile own or master read" on public.profiles
 for select to authenticated
-using(id=auth.uid() or public.current_user_is_education_staff());
+using(id=auth.uid() or public.current_user_is_master());
 
 drop policy if exists "education profile own safe update" on public.profiles;
 create policy "education profile own safe update" on public.profiles
@@ -78,7 +94,7 @@ declare
   target public.profiles;
 begin
   select * into actor from public.profiles where id=auth.uid();
-  if actor.id is null or not actor.is_active or actor.role not in ('admin','master') then
+  if actor.id is null or not actor.is_active or actor.role <> 'master' then
     raise exception 'Acesso restrito';
   end if;
   select * into target from public.profiles where id=target_user for update;

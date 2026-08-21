@@ -1,5 +1,29 @@
--- Execute uma vez no SQL Editor do projeto leitor-fluxo-insight.
--- Permite que o painel compartilhado gerencie usuários sem expor a chave secreta.
+-- Execute uma vez no SQL Editor do projeto Supabase "fala-real-soletra"
+-- (o mesmo projeto usado pelo Soletra Hero Arcade e pelo Fala Real Academy).
+--
+-- Objetivo: só o usuário Master pode ver a lista de usuários cadastrados
+-- (aba "Usuários") e gerenciar contas (ativar/desativar, trocar permissão).
+-- Um usuário "admin" continua enxergando apenas o próprio perfil.
+
+create or replace function public.current_user_is_master()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists(
+    select 1 from public.profiles
+    where id = auth.uid() and is_active and role = 'master'
+  );
+$$;
+
+drop policy if exists "education profile own or staff read" on public.profiles;
+drop policy if exists "education profile own or master read" on public.profiles;
+create policy "education profile own or master read" on public.profiles
+for select to authenticated
+using (id = auth.uid() or public.current_user_is_master());
+
 create or replace function public.admin_manage_profile(
   target_user uuid,
   new_role text default null,
@@ -23,7 +47,6 @@ begin
   if target.id is null then raise exception 'Usuário não encontrado'; end if;
 
   if new_role is not null then
-    if actor.role <> 'master' then raise exception 'Somente Master altera permissões'; end if;
     if new_role not in ('user','admin','master') then raise exception 'Perfil inválido'; end if;
     if target.id = actor.id and new_role <> 'master' then
       raise exception 'O Master não pode remover o próprio acesso';
