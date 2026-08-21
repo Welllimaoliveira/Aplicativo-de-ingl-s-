@@ -60,6 +60,9 @@ body.neon{--gold:#69e6ff;--blue:#bf7cff;--panel:#141c38;--panel2:#202a55;--line:
 .chat-mic{width:52px;height:52px;border-radius:50%;border:2px solid var(--blue);background:#277cad;color:#fff;font-size:23px}
 .chat-mic.on{animation:pulse 1s infinite}
 .chat-mic.error{border-color:var(--red);background:#74303b}
+.chat-mic.fluid-listening{animation:pulse 1s infinite;border-color:var(--gold)}
+.fluid-toggle{display:flex;align-items:center;gap:8px;margin-top:10px;padding:9px 11px;border:1px solid var(--line);border-radius:14px;background:var(--panel2);font-weight:700;cursor:pointer}
+.fluid-toggle small{display:block;font-weight:400;color:var(--mut)}
 .chat-send{min-width:52px;height:52px;padding:0 12px}
 .chat-status{text-align:center;color:var(--mut);font-size:12px;min-height:20px;margin-top:6px}
 .ai-report .score-ring{margin-top:4px}
@@ -186,6 +189,10 @@ body.neon{--gold:#69e6ff;--blue:#bf7cff;--panel:#141c38;--panel2:#202a55;--line:
         <option value="technology">💻 Tecnologia</option>
       </select>
     </label>
+    <label class="fluid-toggle">
+      <input id="aiFluidToggle" type="checkbox">
+      🎧 Conversa fluida <small>(a IA escuta e responde sem precisar tocar no microfone)</small>
+    </label>
     <div class="row" style="margin-top:9px">
       <button id="aiStartBtn" class="primary grow">▶️ Iniciar conversa</button>
       <button id="aiEndBtn" class="secondary" disabled>🏁 Finalizar</button>
@@ -195,7 +202,7 @@ body.neon{--gold:#69e6ff;--blue:#bf7cff;--panel:#141c38;--panel2:#202a55;--line:
   <div id="aiChat" class="chatlog">
     <div class="chat-empty">
       Configure a IA e toque em <b>Iniciar conversa</b>.<br><br>
-      Você poderá falar pelo microfone ou digitar. Toque em qualquer
+      Ative <b>Conversa fluida</b> para falar sem precisar tocar no microfone, ou toque em
       <span class="word-tip" data-word="word">word</span> para ver a tradução.
     </div>
   </div>
@@ -280,7 +287,7 @@ function wordPool(){ensureWordBankData();let max=p().level==='beginner'?1600:p()
 function renderWordBankControls(){ensureWordBankData();let themes=window.WORD_THEMES||[];$('wordTheme').innerHTML=themes.map(t=>`<option value="${t[0]}" ${p().wordTheme===t[0]?'selected':''}>${t[2]} ${t[1]}</option>`).join('');$('wordMode').value=p().wordMode;let count=wordPool().length;$('wordBankCount').textContent=`${count.toLocaleString('pt-BR')} palavras disponíveis neste nível e tema`;$('wordTheme').onchange=()=>{p().wordTheme=$('wordTheme').value;p().wordHistory=[];save();renderWordBankControls()};$('wordMode').onchange=()=>{p().wordMode=$('wordMode').value;save()}}
 function show(id){['home','lesson','result','essayScreen','aiScreen','storyScreen'].forEach(x=>$(x).classList.toggle('hidden',x!==id));scrollTo(0,0)}
 function toast(t){$('toast').textContent=t;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),1700)}
-function speak(t){try{if(window.AndroidTTS&&AndroidTTS.speak){AndroidTTS.speak(t,'en-US');return}}catch(e){}if('speechSynthesis'in window){speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.88;speechSynthesis.speak(u)}}
+function speak(t){return new Promise(resolve=>{try{if(window.AndroidTTS&&AndroidTTS.speak){AndroidTTS.speak(t,'en-US');resolve();return}}catch(e){}if('speechSynthesis'in window){speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.88;u.onend=()=>resolve();u.onerror=()=>resolve();speechSynthesis.speak(u)}else resolve()})}
 function render(){S.profile=db.current;ensureEssayData();ensureAIData();ensureWordBankData();document.body.classList.toggle('neon',!!p().neon);$('profName').textContent=S.profile;$('starsHome').textContent=p().stars;$('streakHome').textContent=p().streak;$('xpHome').textContent=p().xp;$('ticketsHome').textContent=p().tickets;$('levels').innerHTML=LEVELS.map(l=>`<button class="choice ${p().level===l[0]?'active':''}" data-level="${l[0]}"><b>${l[1]}</b><small>${l[2]}</small></button>`).join('');document.querySelectorAll('[data-level]').forEach(b=>b.onclick=()=>{p().level=b.dataset.level;save();render()});renderWordBankControls();$('modules').innerHTML=MODULES.map(m=>`<button class="module" data-module="${m[0]}"><span class="ico">${m[1]}</span><span><b>${m[2]}</b><small>${m[3]}</small></span><span class="go">›</span></button>`).join('');document.querySelectorAll('[data-module]').forEach(b=>b.onclick=()=>b.dataset.module==='essay'?openEssay():b.dataset.module==='ai'?openAIConversation():b.dataset.module==='story'?openStoryMode():start(b.dataset.module,false))}
 function esc(s){let d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
 function wordOptions(word,pool){let same=shuffle(pool.filter(x=>x[0]!==word&&Math.abs(x[0].length-word.length)<=2)).slice(0,3).map(x=>x[0]);return shuffle([word,...same])}
@@ -473,7 +480,11 @@ async function explainWordAI(){
 }
 document.addEventListener('click',e=>{let w=e.target.closest('.word-tip');if(w){e.preventDefault();e.stopPropagation();openWordTip(w.dataset.word)}});
 
-let AI={active:false,thinking:false,history:[],turns:[],topic:'free',startedAt:0};
+let AI={active:false,thinking:false,history:[],turns:[],topic:'free',startedAt:0,fluid:localStorage.getItem('fala_real_fluid_mode')==='on'};
+async function speakAndMaybeListen(text){
+  try{await speak(text)}catch(e){}
+  if(AI.fluid&&AI.active&&!AI.thinking&&!speechBusy)startAISpeech()
+}
 function levelLabel(){return p().level==='beginner'?'Iniciante':p().level==='intermediate'?'Intermediário':'Avançado'}
 function openAIConversation(){
   ensureAIData();show('aiScreen');$('aiLevelText').textContent=levelLabel();$('aiReport').classList.add('hidden');
@@ -497,13 +508,13 @@ function aiThinking(on){
 async function startAI(){
   if(!backendConfigured()){toast('Configure o backend da IA primeiro.');openAISettings();return}
   if(!(await updateBackendBadge())){toast('Servidor da IA não está pronto.');return}
-  AI={active:true,thinking:false,history:[],turns:[],topic:$('aiTopic').value,startedAt:Date.now()};
+  AI={active:true,thinking:false,history:[],turns:[],topic:$('aiTopic').value,startedAt:Date.now(),fluid:AI.fluid};
   $('aiChat').innerHTML='';$('aiReport').classList.add('hidden');updateAIControls();$('aiStatus').textContent='Conversa iniciada.';
   try{
     AI.thinking=true;updateAIControls();aiThinking(true);
     let d=await apiPost('/api/conversation',{action:'start',level:p().level,topic:AI.topic,history:[]});
     aiThinking(false);AI.thinking=false;let reply=d.reply||'Hi! What would you like to talk about today?';
-    AI.history.push({role:'model',text:reply});aiBubble('ai',reply,'Fala Real AI');speak(reply);updateAIControls()
+    AI.history.push({role:'model',text:reply});aiBubble('ai',reply,'Fala Real AI');updateAIControls();speakAndMaybeListen(reply)
   }catch(e){aiThinking(false);AI.thinking=false;AI.active=false;updateAIControls();$('aiStatus').textContent='Erro: '+e.message}
 }
 function setAIMicState(state,msg){
@@ -518,7 +529,12 @@ async function startAISpeech(){
   let r=new R();r.lang='en-US';r.continuous=false;r.interimResults=false;r.maxAlternatives=1;
   r.onstart=()=>setAIMicState('on','Ouvindo... fale em inglês.');
   r.onresult=e=>{let res=e.results?.[0]?.[0];speechBusy=false;if(res)handleAIUserText(res.transcript,typeof res.confidence==='number'?res.confidence:null);else setAIMicState('error','Não ouvi sua fala.')};
-  r.onerror=e=>{speechBusy=false;setAIMicState('error',e.error==='not-allowed'?'Permissão de microfone negada.':'Não consegui reconhecer sua fala.')};
+  r.onerror=e=>{
+    speechBusy=false;
+    const recoverable=e.error==='no-speech'||e.error==='aborted';
+    setAIMicState('error',e.error==='not-allowed'?'Permissão de microfone negada.':recoverable&&AI.fluid?'Não ouvi nada, continuo esperando...':'Não consegui reconhecer sua fala.');
+    if(AI.fluid&&AI.active&&!AI.thinking&&recoverable)setTimeout(()=>{if(AI.fluid&&AI.active&&!AI.thinking&&!speechBusy)startAISpeech()},600)
+  };
   try{r.start()}catch(e){speechBusy=false;setAIMicState('error','O microfone já está em uso.')}
 }
 async function handleAIUserText(text,confidence=null){
@@ -529,7 +545,7 @@ async function handleAIUserText(text,confidence=null){
   try{
     let d=await apiPost('/api/conversation',{action:'continue',level:p().level,topic:AI.topic,history:AI.history.slice(-16),userText:text,confidence});
     aiThinking(false);let reply=d.reply||'Could you tell me more?';AI.history.push({role:'model',text:reply});AI.turns[AI.turns.length-1].assistant=reply;AI.turns[AI.turns.length-1].correction=d.correction||null;
-    aiBubble('ai',reply,'Fala Real AI',d.correction||null);speak(reply);$('aiStatus').textContent=d.correction?.corrected?'Correção rápida disponível.':'Continue falando. Quando quiser, finalize para receber seu relatório.'
+    aiBubble('ai',reply,'Fala Real AI',d.correction||null);speakAndMaybeListen(reply);$('aiStatus').textContent=d.correction?.corrected?'Correção rápida disponível.':'Continue falando. Quando quiser, finalize para receber seu relatório.'
   }catch(e){aiThinking(false);$('aiStatus').textContent='Erro: '+e.message;aiBubble('ai','I had a connection problem. Please try that again.','Falha de conexão')}
   finally{AI.thinking=false;updateAIControls()}
 }
@@ -732,6 +748,13 @@ $('aiStartBtn').onclick=startAI;
 $('aiEndBtn').onclick=finishAIConversation;
 $('aiMicBtn').onclick=startAISpeech;
 $('aiSendBtn').onclick=()=>handleAIUserText($('aiTyped').value,null);
+$('aiFluidToggle').checked=AI.fluid;
+$('aiFluidToggle').onchange=e=>{
+  AI.fluid=e.target.checked;
+  localStorage.setItem('fala_real_fluid_mode',AI.fluid?'on':'off');
+  if(AI.fluid&&AI.active&&!AI.thinking&&!speechBusy)startAISpeech();
+  $('aiStatus').textContent=AI.fluid?'Conversa fluida ativada: fale à vontade, sem tocar no microfone.':'Conversa fluida desativada.'
+};
 $('aiTyped').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();handleAIUserText($('aiTyped').value,null)}});
 
 $('profilesBtn').onclick=profiles;$('profileSelect').onchange=()=>{db.current=$('profileSelect').value;S.profile=db.current;save();render()};$('addProfile').onclick=()=>{let n=$('newProfile').value.trim();if(!n)return;if(!db.profiles[n])db.profiles[n]=fresh();db.current=n;S.profile=n;save();$('profilesModal').classList.add('hidden');render()};document.querySelectorAll('.close').forEach(b=>b.onclick=()=>b.closest('.modal').classList.add('hidden'));$('exitLesson').onclick=()=>{clearTimeout(S.timer);speechBusy=false;S.finished=true;show('home');render()};$('backHome').onclick=()=>{show('home');render()};$('reviewBtn').onclick=()=>start('review',true);$('shopBtn').onclick=shop;$('statsBtn').onclick=stats;render();if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
