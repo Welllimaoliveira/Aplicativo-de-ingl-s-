@@ -489,6 +489,36 @@
     return pyodidePromise;
   }
 
+  // O erro que o Pyodide devolve é o traceback INTEIRO, incluindo os
+  // frames internos dele mesmo (_pyodide/_base.py etc.) - confuso pra quem
+  // está aprendendo. Fica só a partir do último "File "<exec>"", que é
+  // onde o erro de verdade aconteceu no código do aluno.
+  function friendlyPyError(message) {
+    const text = String(message || '').trim();
+    const lines = text.split('\n');
+    let lastExecIdx = -1;
+    for (let i = 0; i < lines.length; i++) if (lines[i].includes('File "<exec>"')) lastExecIdx = i;
+    let snippet = lastExecIdx >= 0 ? lines.slice(lastExecIdx).join('\n').trim() : text;
+    snippet = snippet.replace(/File "<exec>", line (\d+)(?:, in .*)?/, 'Linha $1:');
+    return snippet || 'Erro ao rodar o código.';
+  }
+
+  // Dica curta em português pros erros mais comuns de quem está começando -
+  // além de mostrar o erro "cru", explica o que geralmente causa ele.
+  function pyErrorTipPt(msg) {
+    const tips = [
+      [/IndentationError/, '🐍 <b>Erro de indentação:</b> em Python, o que fica "dentro" de uma função, if ou for precisa estar recuado (geralmente 4 espaços) em relação à linha de cima. Confira se todas as linhas do corpo estão alinhadas.'],
+      [/SyntaxError/, '🐍 <b>Erro de sintaxe:</b> alguma coisa está escrita de um jeito que o Python não entende - confira parênteses, dois-pontos (:) no fim de if/for/def, e se não falta ou sobra algum caractere.'],
+      [/NameError/, '🐍 <b>Nome não encontrado:</b> você usou uma variável ou função que ainda não existe (ou escreveu o nome errado/diferente de como criou).'],
+      [/TypeError/, '🐍 <b>Tipo incompatível:</b> você tentou usar dois tipos diferentes juntos de um jeito que não funciona (ex.: somar texto com número).'],
+      [/ZeroDivisionError/, '🐍 Você tentou dividir por zero - em matemática isso não tem resultado.'],
+      [/IndexError/, '🐍 Você tentou acessar uma posição da lista que não existe (lembre: a contagem começa em 0).'],
+      [/KeyError/, '🐍 Você tentou acessar uma chave do dicionário que não existe.'],
+    ];
+    const hit = tips.find(([re]) => re.test(msg));
+    return hit ? `<div style="margin-top:8px">${hit[1]}</div>` : '';
+  }
+
   async function checkPython(ex) {
     const code = $id('codingEditor').value;
     // Alerta leve pra loop claramente infinito, antes de tentar rodar -
@@ -519,8 +549,8 @@
         feedback(`❌ O código rodou, mas a saída não bateu.<br><b>Sua saída:</b><span class="corrected" style="display:block;margin:4px 0 8px;padding:8px">${esc(output.trim() || '(nada impresso)')}</span><b>Esperado:</b><span class="corrected" style="display:block;margin-top:4px;padding:8px">${esc(ex.expectedOutput)}</span>`, 'bad');
       }
     } catch (e) {
-      const msg = e && e.message === 'TIMEOUT' ? 'Seu código demorou demais pra rodar (tem algum loop sem fim?).' : (e && e.message) || 'Erro ao rodar o código.';
-      feedback(`❌ ${esc(msg)}`, 'bad');
+      const msg = e && e.message === 'TIMEOUT' ? 'Seu código demorou demais pra rodar (tem algum loop sem fim?).' : friendlyPyError(e && e.message);
+      feedback(`❌ Seu código tem um erro:<br><span class="corrected" style="display:block;margin-top:6px;padding:8px;white-space:pre-wrap">${esc(msg)}</span>${pyErrorTipPt(msg)}`, 'bad');
     } finally {
       $id('codingCheckBtn').disabled = false;
       $id('codingCheckBtn').textContent = '▶️ Rodar e verificar';
