@@ -26,7 +26,45 @@ const themes = {
   communication: ['Comunicação','💬','communication speak talk say tell ask answer question conversation message call phone email letter meeting presentation explain describe discuss agree disagree listen read write translate'],
 };
 
-const blocked = new Set('fuck fucking fucked shit bullshit bitch bastard asshole porn porno sex sexy dick pussy rape nazi cocaine heroin marijuana'.split(' '));
+// Lista ampliada depois de auditar o banco gerado: a fonte é frequência de
+// legendas (hermitdave/FrequencyWords), então junto com palavras reais vêm
+// nomes de personagem, efeitos sonoros de roteiro e violência/palavrão bem
+// além do que a lista original cobria. Ver histórico do commit que expandiu
+// isto pra contexto completo de cada categoria removida.
+const blocked = new Set([
+  // Palavrão / conteúdo sexual e adulto
+  'fuck','fucking','fucked','fuckin','shit','bullshit','bitch','bastard','bastards','asshole','ass','piss','pissed',
+  'porn','porno','sex','sexy','dick','pussy','whore','naked','damn','damned','crap','hell','goddamn','motherfucker',
+  // Violência explícita, crime grave, morte, drogas
+  'rape','raped','murder','murdered','murderer','murders','kill','killed','killer','killing','kills','suicide',
+  'torture','drunk','drugs','drug','gun','guns','gunshot','weapon','weapons','blood','bloody','bleeding','kidnapped',
+  'cocaine','heroin','marijuana','slave',
+  // Contexto histórico sensível vindo de filmes de guerra no corpus de legendas
+  'nazi','hitler','jews',
+  // Fragmentos de contração sem o "'t" (a lista de frequência já vinha cortada:
+  // "isn"/"wasn"/"don" não são palavras - "isn't"/"wasn't"/"don't" são)
+  'ain','don','isn','wasn','hasn','haven','couldn','shouldn','wouldn','weren','mustn','hadn',
+  // Interjeições/efeitos sonoros de roteiro de legenda, sem valor de vocabulário
+  'aah','ahh','ohh','ooh','mmm','hmm','huh','nah','heh','whoo','yep','yup','erm','uh-huh','uh-oh','mm-hmm','aye','gee','shh',
+  'beep','beeping','beeps','bleep','i-i','you-','just-','no-one','good-bye','bye-bye',
+  // Nomes próprios de pessoa (não ensinam vocabulário) - nomes de país/cidade
+  // continuam liberados por serem geografia útil de verdade
+  'abby','adam','alan','albert','alex','ali','alice','amanda','amy','andrew','andy','angela','anna','anne','annie',
+  'arthur','barbara','barry','ben','beth','betty','billy','blake','bob','bobby','brad','brian','bruce','carl','carlos',
+  'carol','carter','catherine','charles','charlie','charlotte','chloe','chris','christian','chuck','claire','clark',
+  'dan','daniel','danny','dave','david','davis','dean','donna','doug','drew','eddie','edward','ellen','emily','emma',
+  'eric','frank','frankie','fred','gary','george','gordon','hank','hannah','harry','helen','henry','holly','howard',
+  'ian','jack','jackie','jackson','jake','james','jamie','jane','jason','jay','jean','jeff','jenny','jeremy','jerry',
+  'jesse','jessica','jim','jimmy','joe','joey','john','johnny','johnson','jones','jordan','joseph','josh','judy',
+  'julia','julie','justin','karen','kate','katie','kelly','ken','kenny','kevin','kim','kyle','larry','laura','lee',
+  'leo','lewis','lily','linda','lisa','lou','louis','lucas','lucy','luke','mac','maggie','marcus','margaret','maria',
+  'marie','mark','martha','martin','marty','mary','mason','matt','max','michael','michelle','mike','miller','molly',
+  'monsieur','morgan','nancy','nathan','nick','nina','oliver','oscar','parker','patrick','paul','pete','peter','phil',
+  'rachel','randy','rebecca','richard','rick','ricky','rob','robert','robin','roger','ross','roy','russell','ryan',
+  'sally','sam','sara','sarah','scott','sean','simon','smith','sophie','stan','stephen','steve','steven','sue',
+  'susan','taylor','ted','teddy','terry','thomas','tim','tina','todd','tom','tommy','tony','victor','vincent',
+  'walter','wayne','william','wilson','mrs','hong','kong','york',
+]);
 const themeLookup = new Map();
 for (const [id,[label,icon,words]] of Object.entries(themes)) {
   for (const word of words.toLowerCase().split(/\s+/)) if (!themeLookup.has(word)) themeLookup.set(word,id);
@@ -36,7 +74,12 @@ const frequencyWords = fs.readFileSync(inputPath,'utf8').split(/\r?\n/).map(line
 const all = [];
 const seen = new Set();
 function add(word, theme = 'general') {
-  if (!/^[a-z][a-z'-]{2,17}$/.test(word) || blocked.has(word) || seen.has(word)) return;
+  // Além do formato básico, rejeita hífen/apóstrofo nas pontas (fragmento de
+  // fala cortada tipo "you-" ou "i-i") e três letras repetidas seguidas
+  // (artefato de transcrição tipo "chffffff"), que passavam antes.
+  if (!/^[a-z][a-z'-]{2,17}$/.test(word)) return;
+  if (/^[-']|[-']$|(.)\1\1/.test(word)) return;
+  if (blocked.has(word) || seen.has(word)) return;
   seen.add(word); all.push([word,theme]);
 }
 for (const [word,theme] of themeLookup) add(word,theme);

@@ -154,7 +154,16 @@ public class MainActivity extends Activity {
     }
 
     public class TTSBridge {
+        // Sobrecarga antiga (sem velocidade) continua existindo pra não quebrar
+        // nenhuma chamada já feita no JS que ainda não passa a taxa.
         @JavascriptInterface public void speak(String text, String lang) {
+            speak(text, lang, 1.0);
+        }
+        // A versão com "rate" é a que realmente respeita o controle de
+        // velocidade da tela de história: antes o app nativo sempre lia no
+        // ritmo padrão do sistema porque tts.setSpeechRate() nunca era
+        // chamado, então o slider da web não tinha efeito nenhum no celular.
+        @JavascriptInterface public void speak(String text, String lang, double rate) {
             runOnUiThread(() -> {
                 if (tts == null) return;
                 Locale locale = (lang != null && lang.toLowerCase().startsWith("pt")) ? new Locale("pt", "BR") : Locale.US;
@@ -163,6 +172,8 @@ public class MainActivity extends Activity {
                     js("window.onNativeSpeechError('tts'," + quote("A voz " + locale.toLanguageTag() + " não está instalada neste aparelho.") + ")");
                     return;
                 }
+                float safeRate = (rate > 0.1 && rate <= 3.0) ? (float) rate : 1.0f;
+                tts.setSpeechRate(safeRate);
                 tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "fala-real");
             });
         }

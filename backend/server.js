@@ -71,6 +71,27 @@ async function essayReview(body){
   return gemini(system,[{role:'user',parts:[{text:JSON.stringify(body)}]}],.25)
 }
 
+function storyLevelText(l){return l==='advanced'?'B2-C1 advanced (richer vocabulary, longer sentences, some idioms)':l==='intermediate'?'A2-B1 intermediate (everyday vocabulary, simple past/future, connectors)':'A1 beginner (very simple present-tense sentences, common words, short clauses)'}
+async function story(body){
+  let theme=String(body.theme||'').trim().slice(0,200);
+  if(!theme)throw new Error('Descreva um tema para a história.');
+  let level=['beginner','intermediate','advanced'].includes(body.level)?body.level:'beginner';
+  let system=`You are a children/adult-friendly English-learning story writer for Brazilian Portuguese speakers using the "Fala Real" app.
+Write an ORIGINAL story (never copy an existing copyrighted text) inspired by the theme the learner gives you, at ${storyLevelText(level)} level.
+Rules:
+- At least 20 and at most 26 short segments (paragraphs), each 1-3 sentences in English.
+- Every segment needs an accurate, natural Brazilian Portuguese translation.
+- Content must be wholesome and appropriate for all ages: no violence, profanity, sexual content, drugs or real tragedy - even for dark/mythological/biblical/historical themes, tell it in a gentle, respectful, age-appropriate way.
+- Keep vocabulary and grammar consistent with the requested level throughout.
+- Pick one emoji that represents the story as its icon.
+Return ONLY JSON in this exact shape:
+{"title":"Short English title","description":"Uma frase em português descrevendo a história.","icon":"📖","segments":[["Tradução em português.","English sentence."], ...at least 20 items...]}`;
+  let prompt=`Tema pedido pelo aluno: "${theme}". Nível: ${level}. Gere a história agora, com pelo menos 20 segmentos.`;
+  let result=await gemini(system,[{role:'user',parts:[{text:prompt}]}],.5);
+  let segments=Array.isArray(result?.segments)?result.segments.filter(s=>Array.isArray(s)&&s[0]&&s[1]):[];
+  if(segments.length<12)throw new Error('A IA gerou uma história curta demais. Tente descrever o tema de outro jeito.');
+  return {id:`ai-${Date.now()}`,level,icon:typeof result.icon==='string'&&result.icon?result.icon:'📖',title:String(result.title||theme).slice(0,120),description:String(result.description||'').slice(0,240),segments:segments.slice(0,30),generated:true};
+}
 async function dictionary(body){
   let system=`You are a concise English-Portuguese learner dictionary. Return JSON ONLY: {"word":"...","translation":"Brazilian Portuguese meaning(s)","example":"one simple English example sentence","tipPt":"one short Portuguese usage or pronunciation tip"}.`;
   return gemini(system,[{role:'user',parts:[{text:String(body.word||'').slice(0,80)}]}],.2)
@@ -97,6 +118,7 @@ function mockReply(system){
     studyPlan:['Treinar perguntas no passado.','Usar conectivos em respostas mais longas.','Repetir frases corrigidas em voz alta.']
   };
   if(s.includes('learner dictionary'))return {word:'example',translation:'exemplo',example:'This is an example.',tipPt:'O som inicial é /ɪg/.'};
+  if(s.includes('story writer'))return {title:'A Small Adventure',description:'Uma pequena aventura de exemplo (modo simulado).',icon:'📖',segments:Array.from({length:20},(_,i)=>[`Parágrafo de exemplo número ${i+1} em português.`,`Sample paragraph number ${i+1} in English.`])};
   return {reply:'Great! Tell me a little more about that. What happened next?',correction:{corrected:null,explanationPt:null}}
 }
 
@@ -111,6 +133,7 @@ const server=http.createServer(async(req,res)=>{
     if(req.url==='/api/conversation/report')return send(res,200,await conversationReport(body));
     if(req.url==='/api/essay/review')return send(res,200,await essayReview(body));
     if(req.url==='/api/dictionary')return send(res,200,await dictionary(body));
+    if(req.url==='/api/story')return send(res,200,await story(body));
     return send(res,404,{error:'Rota não encontrada.'})
   }catch(e){
     console.error(e);
