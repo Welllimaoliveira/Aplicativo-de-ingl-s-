@@ -18,6 +18,41 @@
   // antes de entrar aqui.
   const CURRICULUM = {
     python: {
+      // Trilha "Bem Iniciante": passo a passo, um exercício de cada vez,
+      // pra quem nunca escreveu uma linha de código. Só 3 conceitos, bem
+      // guiados, com pouquíssimo código pra escrever sozinho.
+      beginner: [
+        { topic: 'Loops (repetição)', exercises: [
+          { id:'py-begin-loop-1', type:'write', title:'Repita 3 vezes',
+            promptPt:'Um `for` repete um bloco de código várias vezes. Complete o código pra imprimir "Oi!" três vezes (uma em cada linha).',
+            starter:'for i in range(3):\n    # seu código aqui: imprima "Oi!"\n    pass',
+            expectedOutput:'Oi!\nOi!\nOi!', hint:'Dentro do for, use print("Oi!") - como o range(3) tem 3 números (0,1,2), o print roda 3 vezes.' },
+          { id:'py-begin-loop-2', type:'predict', title:'Contando com o for',
+            promptPt:'O que este código imprime? (uma linha por número)',
+            code:'for n in range(1, 4):\n    print(n)',
+            expectedOutput:'1\n2\n3', hint:'range(1, 4) começa em 1 e vai até 3 (o 4 não entra) - por isso conta 1, 2, 3.' },
+        ]},
+        { topic: 'Funções', exercises: [
+          { id:'py-begin-func-1', type:'write', title:'Sua primeira função',
+            promptPt:'Uma função é um "pacotinho" de código com nome, que você pode chamar quando quiser. Complete a função `saudacao()` pra ela imprimir "Bem-vindo ao mundo da programação!", e chame ela (a chamada `saudacao()` já está pronta no final).',
+            starter:'def saudacao():\n    # seu código aqui\n    pass\n\nsaudacao()',
+            expectedOutput:'Bem-vindo ao mundo da programação!', hint:'Dentro da função, use print("Bem-vindo ao mundo da programação!")' },
+          { id:'py-begin-func-2', type:'predict', title:'Função com parâmetro',
+            promptPt:'O que este código imprime? Uma função pode receber um valor (parâmetro) e devolver um resultado.',
+            code:'def dobro(n):\n    return n * 2\n\nprint(dobro(5))',
+            expectedOutput:'10', hint:'A função dobro recebe 5, multiplica por 2, e devolve 10.' },
+        ]},
+        { topic: 'Condicionais (if / else)', exercises: [
+          { id:'py-begin-cond-1', type:'write', title:'Pode entrar?',
+            promptPt:'Um `if` deixa o código tomar decisões. Complete `checar_idade(idade)`: se `idade >= 18`, imprima "Pode entrar!"; senão, imprima "Você ainda não pode entrar.". A chamada com 20 já está pronta.',
+            starter:'def checar_idade(idade):\n    # seu código aqui\n    pass\n\nchecar_idade(20)',
+            expectedOutput:'Pode entrar!', hint:'if idade >= 18:\n    print("Pode entrar!")\nelse:\n    print("Você ainda não pode entrar.")' },
+          { id:'py-begin-cond-2', type:'predict', title:'Testando a condição',
+            promptPt:'O que este código imprime?',
+            code:'idade = 15\nif idade >= 18:\n    print("Pode entrar!")\nelse:\n    print("Você ainda não pode entrar.")',
+            expectedOutput:'Você ainda não pode entrar.', hint:'15 é menor que 18, então a condição do if é falsa e o else é executado.' },
+        ]},
+      ],
       basic: [
         { topic: 'Variáveis e tipos', exercises: [
           { id:'py-basic-vars-1', type:'write', title:'Calculando a média',
@@ -144,6 +179,41 @@
       ],
     },
     csharp: {
+      beginner: [
+        { topic: 'Loops (repetição)', exercises: [
+          { id:'cs-begin-loop-1', type:'write', title:'Repita 3 vezes',
+            promptPt:'Um `for` repete um bloco de código várias vezes. Complete o código pra imprimir "Oi!" três vezes (uma em cada linha) com `Console.WriteLine`.',
+            starter:'for (int i = 0; i < 3; i++) {\n    // seu código aqui: imprima "Oi!"\n}',
+            expectedOutput:'Oi!\nOi!\nOi!', checks:[/for\s*\(/, /Console\.WriteLine/i],
+            hint:'Dentro do for, use Console.WriteLine("Oi!"); - o for roda 3 vezes (i = 0, 1, 2).' },
+          { id:'cs-begin-loop-2', type:'predict', title:'Contando com o for',
+            promptPt:'O que este código imprime? (uma linha por número)',
+            code:'for (int n = 1; n <= 3; n++) {\n    Console.WriteLine(n);\n}',
+            expectedOutput:'1\n2\n3', hint:'O for começa em n=1 e continua enquanto n <= 3 - por isso conta 1, 2, 3.' },
+        ]},
+        { topic: 'Métodos', exercises: [
+          { id:'cs-begin-func-1', type:'write', title:'Seu primeiro método',
+            promptPt:'Um método é um "pacotinho" de código com nome, que você pode chamar quando quiser. Complete o método `Saudacao()` pra ele imprimir "Bem-vindo ao mundo da programação!", e chame ele (a chamada `Saudacao();` já está pronta no final).',
+            starter:'static void Saudacao() {\n    // seu código aqui\n}\n\nSaudacao();',
+            expectedOutput:'Bem-vindo ao mundo da programação!', checks:[/void\s+Saudacao\s*\(/i, /Console\.WriteLine/i],
+            hint:'Dentro do método, use Console.WriteLine("Bem-vindo ao mundo da programação!");' },
+          { id:'cs-begin-func-2', type:'predict', title:'Método com parâmetro',
+            promptPt:'O que este código imprime? Um método pode receber um valor (parâmetro) e devolver um resultado.',
+            code:'int Dobro(int n) => n * 2;\nConsole.WriteLine(Dobro(5));',
+            expectedOutput:'10', hint:'O método Dobro recebe 5, multiplica por 2, e devolve 10.' },
+        ]},
+        { topic: 'Condicionais (if / else)', exercises: [
+          { id:'cs-begin-cond-1', type:'write', title:'Pode entrar?',
+            promptPt:'Um `if` deixa o código tomar decisões. Complete `CheckIdade(idade)`: se `idade >= 18`, imprima "Pode entrar!"; senão, imprima "Você ainda não pode entrar.". A chamada com 20 já está pronta.',
+            starter:'static void CheckIdade(int idade) {\n    // seu código aqui\n}\n\nCheckIdade(20);',
+            expectedOutput:'Pode entrar!', checks:[/if\s*\(/, /else/],
+            hint:'if (idade >= 18) Console.WriteLine("Pode entrar!"); else Console.WriteLine("Você ainda não pode entrar.");' },
+          { id:'cs-begin-cond-2', type:'predict', title:'Testando a condição',
+            promptPt:'O que este código imprime?',
+            code:'int idade = 15;\nif (idade >= 18) Console.WriteLine("Pode entrar!");\nelse Console.WriteLine("Você ainda não pode entrar.");',
+            expectedOutput:'Você ainda não pode entrar.', hint:'15 é menor que 18, então a condição do if é falsa e o else é executado.' },
+        ]},
+      ],
       basic: [
         { topic: 'Variáveis e tipos', exercises: [
           { id:'cs-basic-vars-1', type:'write', title:'Calculando a média',
@@ -284,10 +354,14 @@
   };
 
   const LANG_LABEL = { python: '🐍 Python', csharp: '🔷 C#' };
-  const TIER_LABEL = { basic: 'Básico', medium: 'Médio' };
+  // Jornada gamificada: 3 etapas, cada uma só se abre depois de terminar
+  // 100% da anterior. O conteúdo do nível avançado (antigo "médio") não foi
+  // tocado - só ganhou um nome de topo de trilha.
+  const TIER_ORDER = ['beginner', 'basic', 'medium'];
+  const TIER_LABEL = { beginner: '🌱 Bem Iniciante', basic: '🚀 Intermediário', medium: '🏆 Super Mega Programador' };
 
   // ---------- Estado e progresso ----------
-  let state = { lang: 'python', tier: 'basic', topicIndex: 0, exIndex: 0 };
+  let state = { lang: 'python', tier: 'beginner', topicIndex: 0, exIndex: 0 };
 
   function ensureCodingData() {
     let x = p();
@@ -295,7 +369,8 @@
     if (!x.coding.done) x.coding.done = {};
   }
   function exId(topicI, exI) { return flatExercises()[topicI] ? flatExercises()[topicI][exI]?.id : null; }
-  function topics() { return CURRICULUM[state.lang][state.tier]; }
+  function topicsOf(lang, tier) { return CURRICULUM[lang][tier]; }
+  function topics() { return topicsOf(state.lang, state.tier); }
   function flatExercises() { return topics().map((t) => t.exercises); }
   function currentTopic() { return topics()[state.topicIndex]; }
   function currentExercise() { return currentTopic()?.exercises[state.exIndex]; }
@@ -307,6 +382,24 @@
     if ($id('codingProgress')) $id('codingProgress').textContent = `${doneCount}/${total} exercícios concluídos neste nível`;
   }
   function topicProgress(t) { return t.exercises.filter((e) => isDone(e.id)).length; }
+  function tierProgress(lang, tier) {
+    const t = topicsOf(lang, tier);
+    const total = t.reduce((a, x) => a + x.exercises.length, 0);
+    const done = t.reduce((a, x) => a + topicProgress(x), 0);
+    return { total, done };
+  }
+  // Só o "Bem Iniciante" começa liberado; cada etapa seguinte pede 100% da
+  // anterior concluída, pra dar aquela sensação real de progressão.
+  function tierUnlocked(lang, tier) {
+    const idx = TIER_ORDER.indexOf(tier);
+    if (idx <= 0) return true;
+    const prev = tierProgress(lang, TIER_ORDER[idx - 1]);
+    return prev.total > 0 && prev.done >= prev.total;
+  }
+  function isTierFullyDone(lang, tier) {
+    const { total, done } = tierProgress(lang, tier);
+    return total > 0 && done >= total;
+  }
 
   // ---------- Injeta a tela ----------
   function inject() {
@@ -321,7 +414,7 @@
       <p class="mut">Lógica de programação de verdade em C# e Python. Não é para crianças: aqui você escreve código, roda Python de verdade no navegador e confere sua lógica em C#.</p>
     </div>
     <div class="essay-tabs"><button id="codingLangPy" class="essay-tab">🐍 Python</button><button id="codingLangCs" class="essay-tab">🔷 C#</button></div>
-    <div class="essay-tabs"><button id="codingTierBasic" class="essay-tab">Básico</button><button id="codingTierMedium" class="essay-tab">Médio</button></div>
+    <div id="codingJourney" class="essay-tabs" style="grid-template-columns:1fr 1fr 1fr"></div>
     <div id="codingTopics" class="story-library"></div>
   </div>
   <div id="codingExercise" class="hidden">
@@ -335,7 +428,7 @@
     </div>
     <div id="codingPredictArea" class="card hidden">
       <pre id="codingSnippet" class="corrected" style="font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace"></pre>
-      <input id="codingPredictInput" class="field" placeholder="O que este código imprime?" style="margin-top:10px" autocapitalize="off" autocomplete="off">
+      <textarea id="codingPredictInput" class="field" placeholder="O que este código imprime? (se forem várias linhas, escreva uma em cada linha)" style="margin-top:10px;min-height:70px;resize:vertical;font-family:ui-monospace,Menlo,Consolas,monospace" autocapitalize="off" autocomplete="off"></textarea>
     </div>
     <div class="row"><button id="codingCheckBtn" class="primary grow">✅ Verificar</button><button id="codingHintBtn" class="secondary">💡 Dica</button></div>
     <div id="codingFeedback" class="hidden" style="margin-top:10px"></div>
@@ -348,14 +441,22 @@
 
   function bind() {
     $id('codingBack').onclick = () => { show('home'); render(); };
-    $id('codingLangPy').onclick = () => { state.lang = 'python'; state.tier = 'basic'; state.topicIndex = 0; renderHome(); };
-    $id('codingLangCs').onclick = () => { state.lang = 'csharp'; state.tier = 'basic'; state.topicIndex = 0; renderHome(); };
-    $id('codingTierBasic').onclick = () => { state.tier = 'basic'; state.topicIndex = 0; renderHome(); };
-    $id('codingTierMedium').onclick = () => { state.tier = 'medium'; state.topicIndex = 0; renderHome(); };
+    $id('codingLangPy').onclick = () => { state.lang = 'python'; state.tier = 'beginner'; state.topicIndex = 0; renderHome(); };
+    $id('codingLangCs').onclick = () => { state.lang = 'csharp'; state.tier = 'beginner'; state.topicIndex = 0; renderHome(); };
     $id('codingCheckBtn').onclick = checkCurrent;
     $id('codingHintBtn').onclick = showHint;
     $id('codingPrevEx').onclick = () => moveExercise(-1);
     $id('codingNextEx').onclick = () => moveExercise(1);
+  }
+
+  function selectTier(tier) {
+    if (!tierUnlocked(state.lang, tier)) {
+      const idx = TIER_ORDER.indexOf(tier);
+      const prev = tierProgress(state.lang, TIER_ORDER[idx - 1]);
+      alert(`🔒 Ainda não! Termine o nível "${TIER_LABEL[TIER_ORDER[idx - 1]]}" primeiro (${prev.done}/${prev.total} concluídos).`);
+      return;
+    }
+    state.tier = tier; state.topicIndex = 0; renderHome();
   }
 
   window.openCodingLab = function openCodingLab() {
@@ -370,8 +471,13 @@
   function renderHome() {
     $id('codingLangPy').classList.toggle('active', state.lang === 'python');
     $id('codingLangCs').classList.toggle('active', state.lang === 'csharp');
-    $id('codingTierBasic').classList.toggle('active', state.tier === 'basic');
-    $id('codingTierMedium').classList.toggle('active', state.tier === 'medium');
+    $id('codingJourney').innerHTML = TIER_ORDER.map((tier) => {
+      const unlocked = tierUnlocked(state.lang, tier);
+      const fullyDone = isTierFullyDone(state.lang, tier);
+      const badge = fullyDone ? ' ✅' : unlocked ? '' : ' 🔒';
+      return `<button class="essay-tab${state.tier === tier ? ' active' : ''}" data-tier="${tier}" style="${unlocked ? '' : 'opacity:.55'}">${TIER_LABEL[tier]}${badge}</button>`;
+    }).join('');
+    document.querySelectorAll('[data-tier]').forEach((b) => b.onclick = () => selectTier(b.dataset.tier));
     $id('codingTopics').innerHTML = topics().map((t, i) => {
       const done = topicProgress(t), total = t.exercises.length;
       return `<button class="story-card" data-topic="${i}"><span class="cover">${done === total ? '✅' : '📘'}</span><span><b>${esc(t.topic)}</b><small>${LANG_LABEL[state.lang]} · ${TIER_LABEL[state.tier]} · ${done}/${total} concluídos</small></span><span class="go">›</span></button>`;
@@ -390,7 +496,7 @@
   function renderExercise() {
     const ex = currentExercise();
     if (!ex) return;
-    $id('codingExTopic').textContent = `${LANG_LABEL[state.lang]} · ${currentTopic().topic}`;
+    $id('codingExTopic').textContent = `${LANG_LABEL[state.lang]} · ${TIER_LABEL[state.tier]} · ${currentTopic().topic}`;
     $id('codingExTitle').textContent = (ex.type === 'predict' ? '🔎 ' : '⌨️ ') + ex.title;
     $id('codingExPrompt').textContent = ex.promptPt;
     $id('codingFeedback').classList.add('hidden');
@@ -429,6 +535,27 @@
     feedback(`💡 ${ex.hint}`, 'hint');
   }
 
+  // Chamado sempre que um exercício é resolvido corretamente. Se esse era o
+  // último exercício do nível, troca o "Próximo exercício" normal por uma
+  // conquista comemorando o nível inteiro e avisando o que foi desbloqueado
+  // - essa é a "progressão contínua gamificada" pedida.
+  function afterSolved(bodyHtml) {
+    const justFinishedTier = isTierFullyDone(state.lang, state.tier);
+    if (!justFinishedTier) {
+      feedback(`${bodyHtml}<button id="codingAutoNext" class="primary" style="margin-top:8px">Próximo exercício ⏭</button>`, 'ok');
+      $id('codingAutoNext').onclick = () => moveExercise(1);
+      return;
+    }
+    const idx = TIER_ORDER.indexOf(state.tier);
+    const nextTier = TIER_ORDER[idx + 1];
+    const goHome = () => { $id('codingHome').classList.remove('hidden'); $id('codingExercise').classList.add('hidden'); renderHome(); };
+    const badge = nextTier
+      ? `<div class="essay-prompt" style="margin-top:10px"><b>🏅 Nível "${TIER_LABEL[state.tier]}" concluído!</b><br>O nível "${TIER_LABEL[nextTier]}" acabou de ser desbloqueado. 🎉</div>`
+      : `<div class="essay-prompt" style="margin-top:10px"><b>🏆 Uau! Você completou TODOS os níveis do Laboratório de Código em ${LANG_LABEL[state.lang]}!</b><br>Isso é nível Super Mega Programador de verdade.</div>`;
+    feedback(`${bodyHtml}${badge}<button id="codingAutoNext" class="primary" style="margin-top:8px">🗺️ Ver minha jornada</button>`, 'ok');
+    $id('codingAutoNext').onclick = goHome;
+  }
+
   function feedback(html, kind) {
     const el = $id('codingFeedback');
     el.classList.remove('hidden');
@@ -446,17 +573,14 @@
     if (ex.type === 'predict') {
       const guess = $id('codingPredictInput').value;
       const ok = normalize(guess) === normalize(ex.expectedOutput);
-      if (ok) { markDone(ex.id); feedback('✅ Isso mesmo! Você leu o código corretamente. <br><button id="codingAutoNext" class="primary" style="margin-top:8px">Próximo exercício ⏭</button>', 'ok'); $id('codingAutoNext').onclick = () => moveExercise(1); }
+      if (ok) { markDone(ex.id); afterSolved('✅ Isso mesmo! Você leu o código corretamente.<br>'); }
       else feedback(`❌ Ainda não. A saída esperada não bate com a sua resposta. Tente reler o código com calma - ou toque em "💡 Dica".`, 'bad');
-      renderHome_ifTopicListVisible();
       return;
     }
     // type === 'write'
     if (state.lang === 'python') return checkPython(ex);
     return checkCSharp(ex);
   }
-
-  function renderHome_ifTopicListVisible() { /* nada a fazer: a lista só é redesenhada ao voltar pra ela */ }
 
   // ---------- Verificação C# (estrutural, sem executar) ----------
   function checkCSharp(ex) {
@@ -467,8 +591,7 @@
       return;
     }
     markDone(ex.id);
-    feedback(`✅ Estrutura correta! Como este app não executa C# de verdade, não conferimos o valor exato - mas com esse código, a saída esperada é:<br><span class="corrected" style="display:block;margin-top:6px;padding:8px">${esc(ex.expectedOutput)}</span><button id="codingAutoNext" class="primary" style="margin-top:8px">Próximo exercício ⏭</button>`, 'ok');
-    $id('codingAutoNext').onclick = () => moveExercise(1);
+    afterSolved(`✅ Estrutura correta! Como este app não executa C# de verdade, não conferimos o valor exato - mas com esse código, a saída esperada é:<br><span class="corrected" style="display:block;margin-top:6px;padding:8px">${esc(ex.expectedOutput)}</span>`);
   }
 
   // ---------- Execução Python real via Pyodide ----------
@@ -543,8 +666,7 @@
       const expected = normalize(ex.expectedOutput);
       if (got === expected) {
         markDone(ex.id);
-        feedback(`✅ Rodou certinho e a saída bateu com o esperado!<br><span class="corrected" style="display:block;margin-top:6px;padding:8px">${esc(output.trim())}</span><button id="codingAutoNext" class="primary" style="margin-top:8px">Próximo exercício ⏭</button>`, 'ok');
-        $id('codingAutoNext').onclick = () => moveExercise(1);
+        afterSolved(`✅ Rodou certinho e a saída bateu com o esperado!<br><span class="corrected" style="display:block;margin-top:6px;padding:8px">${esc(output.trim())}</span>`);
       } else {
         feedback(`❌ O código rodou, mas a saída não bateu.<br><b>Sua saída:</b><span class="corrected" style="display:block;margin:4px 0 8px;padding:8px">${esc(output.trim() || '(nada impresso)')}</span><b>Esperado:</b><span class="corrected" style="display:block;margin-top:4px;padding:8px">${esc(ex.expectedOutput)}</span>`, 'bad');
       }
