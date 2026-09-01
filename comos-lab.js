@@ -12,6 +12,13 @@
    Nada aqui fala com um COMOS real - é um ambiente de treino seguro.
    A API imita nomes reais: objProject, .Name, .Attributes.Item("..."),
    .CDevices, For Each, Debug.Print, MsgBox, etc.
+
+   Validado contra o manual oficial Siemens "Administration Advanced
+   Scripting" (A2S00000650): .Spec("Nome")/.Value/.GetXValue/.SetXValue pra
+   ler/escrever atributo (NÃO existe .GetAttributeValue no COMOS de
+   verdade - isso era um método inventado, mantido aqui só como alias
+   morto pra não quebrar scripts antigos), .FullLabel/.Class/.IsFolder/
+   .SystemType/.Owner/.OwnerByClass como propriedades reais de objeto.
 */
 (() => {
   'use strict';
@@ -25,12 +32,31 @@
   // uma unidade de processo com equipamentos e instrumentos.
   function attr(name, value, unit) { return { __comosAttr: true, Name: name, Value: value, Unit: unit || '' }; }
 
+  // No COMOS de verdade, "objeto de pasta" (categoria, sem engenharia real -
+  // SystemType 13, CDevice) e "objeto de engenharia" (equipamento/instrumento
+  // de fato - SystemType 8, Device) são coisas DIFERENTES (.IsFolder,
+  // .SystemType) - aqui simulamos essa distinção pelas classes que já
+  // existem no modelo (Project/Location = pasta; o resto = engenharia).
+  const FOLDER_CLASSES = ['Project', 'Location'];
+  function systemTypeFor(className) {
+    if (className === 'Project') return 2;
+    if (FOLDER_CLASSES.includes(className)) return 13; // CDevice (base object/pasta)
+    return 8; // Device (objeto de engenharia)
+  }
   function node(def, parent) {
     const n = {
       __comos: true,
       Name: def.Name,
       Description: def.Description || '',
       ClassName: def.ClassName || 'Object',
+      // .FullLabel e .Class são nomes reais do COMOS (ver manual "Advanced
+      // Scripting"): FullLabel costuma ser o Name completo/tag do objeto;
+      // Class é o código/classe de engenharia. .ClassName continua existindo
+      // por compatibilidade com os exercícios já escritos.
+      FullLabel: def.Name,
+      Class: def.ClassName || 'Object',
+      IsFolder: FOLDER_CLASSES.includes(def.ClassName),
+      SystemType: systemTypeFor(def.ClassName),
       _attrs: {},
       _children: [],
       _parent: parent || null,
@@ -216,17 +242,46 @@
         if (lname === 'value') return obj.Value;
         if (lname === 'unit') return obj.Unit;
         if (lname === 'displayvalue') return attrToStr(obj);
+        // GetXValue/SetXValue/GetDisplayXValue são os nomes reais do COMOS
+        // pra ler/escrever o valor de um atributo (ver manual "Advanced
+        // Scripting", cap. Attributes). O COMOS de verdade tem várias
+        // "colunas" de valor por índice (0=Value, 1=Min/Norm/Max...) - aqui
+        // simplificamos e todo índice aponta pro mesmo Value.
+        if (lname === 'getxvalue') return obj.Value;
+        if (lname === 'getdisplayxvalue') return attrToStr(obj);
+        if (lname === 'setxvalue') { obj.Value = args[1]; return undefined; }
         throw new Error('Atributo não tem "' + name + '"');
       }
       if (obj.__comos) {
         if (lname === 'name') return obj.Name;
-        if (lname === 'description' || lname === 'label') return obj.Description;
+        if (lname === 'fulllabel') return obj.FullLabel;
+        if (lname === 'label') return obj.FullLabel;
+        if (lname === 'description') return obj.Description;
         if (lname === 'classname') return obj.ClassName;
+        if (lname === 'class') return obj.Class;
+        if (lname === 'isfolder') return obj.IsFolder;
+        if (lname === 'systemtype') return obj.SystemType;
         if (lname === 'systemfullname' || lname === 'fullname') return obj.SystemFullName;
-        if (lname === 'parent') return obj._parent;
+        if (lname === 'parent' || lname === 'owner') return obj._parent;
+        if (lname === 'ownerbyclass') {
+          // Real: sobe a árvore procurando o primeiro dono de uma dada
+          // classe/código. Aqui a "classe" é o mesmo ClassName do modelo
+          // (simplificação - no COMOS real costuma ser um código de 1
+          // letra, ex. "D" pra Device).
+          const wanted = String(args[0]).toLowerCase();
+          let cur = obj._parent;
+          while (cur) { if (cur.ClassName.toLowerCase() === wanted) return cur; cur = cur._parent; }
+          return null;
+        }
         if (lname === 'cdevices' || lname === 'children') return collection(obj._children.slice());
         if (lname === 'attributes') return collection(Object.values(obj._attrs));
-        if (lname === 'attribute') { const a = obj._attrs[String(args[0]).toLowerCase()]; if (!a) throw new Error('Atributo não encontrado: ' + args[0]); return a; }
+        // .Spec(nome) é como o COMOS de verdade navega até um atributo (ver
+        // manual: "Set objAtt = objDev.Spec(<NestedName>)"). .Attribute()
+        // continua existindo como sinônimo mais simples de digitar.
+        if (lname === 'spec' || lname === 'attribute') { const a = obj._attrs[String(args[0]).toLowerCase()]; if (!a) throw new Error('Atributo não encontrado: ' + args[0]); return a; }
+        // .GetAttributeValue não existe no COMOS de verdade (o jeito certo é
+        // .Spec("Nome").Value) - mantido aqui só pra não quebrar scripts
+        // antigos, mas não é mais ensinado nos exercícios.
         if (lname === 'getattributevalue') { const a = obj._attrs[String(args[0]).toLowerCase()]; return a ? a.Value : null; }
         if (lname === 'devicebyname' || lname === 'itembyname') {
           const nm = String(args[0]).toLowerCase();
@@ -545,11 +600,17 @@
           expected: '=A10\n=A20',
           hint: 'Dentro do For Each: Debug.Print area.Name.' },
         { id: 'comos-x5', title: 'Um atributo de um instrumento',
-          promptPt: 'Pegue a área =A10 com `objProject.CDevices.Item(0)`, depois o instrumento TT-101 por nome com `.DeviceByName("TT-101")`, e imprima o valor do atributo "SetPoint" com `.GetAttributeValue("SetPoint")`.',
-          starter: 'Dim a10, tt\nSet a10 = objProject.CDevices.Item(0)\nSet tt = a10.DeviceByName("TT-101")\n\' imprima o SetPoint de tt aqui\n',
-          solution: 'Dim a10, tt\nSet a10 = objProject.CDevices.Item(0)\nSet tt = a10.DeviceByName("TT-101")\nDebug.Print tt.GetAttributeValue("SetPoint")',
+          promptPt: 'Pegue a área =A10 com `objProject.CDevices.Item(0)`, depois o instrumento TT-101 por nome com `.DeviceByName("TT-101")`, e imprima o valor do atributo "SetPoint". No COMOS de verdade, o jeito certo de acessar um atributo é `.Spec("Nome")` (que devolve o atributo) seguido de `.Value` (que devolve o valor) - é assim mesmo que o manual oficial do COMOS ensina.',
+          starter: 'Dim a10, tt\nSet a10 = objProject.CDevices.Item(0)\nSet tt = a10.DeviceByName("TT-101")\n\' imprima tt.Spec("SetPoint").Value aqui\n',
+          solution: 'Dim a10, tt\nSet a10 = objProject.CDevices.Item(0)\nSet tt = a10.DeviceByName("TT-101")\nDebug.Print tt.Spec("SetPoint").Value',
           expected: '32',
-          hint: 'Debug.Print tt.GetAttributeValue("SetPoint")' },
+          hint: 'Debug.Print tt.Spec("SetPoint").Value  — .Spec() acha o atributo, .Value pega o número.' },
+        { id: 'comos-x6', title: 'FullLabel, Class e IsFolder',
+          promptPt: 'No COMOS de verdade, todo objeto tem `.FullLabel` (tag completa), `.Class` (classe de engenharia) e `.IsFolder` (True se for uma pasta/categoria, não um equipamento real). Pegue a área =A10 e imprima essas três informações, uma por linha.',
+          starter: 'Dim a10\nSet a10 = objProject.CDevices.Item(0)\n\' imprima a10.FullLabel, a10.Class e a10.IsFolder (uma linha cada)\n',
+          solution: 'Dim a10\nSet a10 = objProject.CDevices.Item(0)\nDebug.Print a10.FullLabel\nDebug.Print a10.Class\nDebug.Print a10.IsFolder',
+          expected: '=A10\nLocation\nTrue',
+          hint: 'Três Debug.Print seguidos: a10.FullLabel, a10.Class, a10.IsFolder.' },
       ],
     },
     automatizar: {
@@ -562,21 +623,21 @@
           expected: '2',
           hint: 'If d.ClassName = "Pump" Then total = total + 1  (If de linha única).' },
         { id: 'comos-a2', title: 'Relatório de motores',
-          promptPt: 'Para cada bomba da área =A10, imprima uma linha no formato `NomeDaBomba: Potencia kW`. O motor é o primeiro filho da bomba (`d.CDevices.Item(0)`), e a potência é o atributo "Power" do motor.',
+          promptPt: 'Para cada bomba da área =A10, imprima uma linha no formato `NomeDaBomba: Potencia kW`. O motor é o primeiro filho da bomba (`d.CDevices.Item(0)`), e a potência é `.Spec("Power").Value` do motor.',
           starter: 'Dim a10, d, mot\nSet a10 = objProject.CDevices.Item(0)\nFor Each d In a10.CDevices\n    If d.ClassName = "Pump" Then\n        Set mot = d.CDevices.Item(0)\n        \' Debug.Print no formato  d.Name & ": " & ... & " kW"\n    End If\nNext',
-          solution: 'Dim a10, d, mot\nSet a10 = objProject.CDevices.Item(0)\nFor Each d In a10.CDevices\n    If d.ClassName = "Pump" Then\n        Set mot = d.CDevices.Item(0)\n        Debug.Print d.Name & ": " & mot.GetAttributeValue("Power") & " kW"\n    End If\nNext',
+          solution: 'Dim a10, d, mot\nSet a10 = objProject.CDevices.Item(0)\nFor Each d In a10.CDevices\n    If d.ClassName = "Pump" Then\n        Set mot = d.CDevices.Item(0)\n        Debug.Print d.Name & ": " & mot.Spec("Power").Value & " kW"\n    End If\nNext',
           expected: 'P-101A: 75 kW\nP-101B: 75 kW',
-          hint: 'O & junta texto: d.Name & ": " & mot.GetAttributeValue("Power") & " kW".' },
+          hint: 'O & junta texto: d.Name & ": " & mot.Spec("Power").Value & " kW".' },
         { id: 'comos-a3', title: 'Achar quem está em reserva',
-          promptPt: 'Percorra as bombas da área =A10 e imprima o `.Name` das que têm o atributo "Status" igual a "Reserva".',
-          starter: 'Dim a10, d\nSet a10 = objProject.CDevices.Item(0)\nFor Each d In a10.CDevices\n    \' If d.GetAttributeValue("Status") = "Reserva" Then ...\nNext',
-          solution: 'Dim a10, d\nSet a10 = objProject.CDevices.Item(0)\nFor Each d In a10.CDevices\n    If d.GetAttributeValue("Status") = "Reserva" Then Debug.Print d.Name\nNext',
+          promptPt: 'Percorra os filhos da área =A10 e imprima o `.Name` das bombas (`.ClassName = "Pump"`) que têm o atributo "Status" igual a "Reserva" (`.Spec("Status").Value`). Cheque a classe ANTES de acessar `.Spec("Status")` - os instrumentos da mesma área não têm esse atributo, e no COMOS de verdade `.Spec()` dá erro quando o atributo não existe (por isso sempre se confere a classe/existência antes de acessar).',
+          starter: 'Dim a10, d\nSet a10 = objProject.CDevices.Item(0)\nFor Each d In a10.CDevices\n    \' If d.ClassName = "Pump" And d.Spec("Status").Value = "Reserva" Then ...\nNext',
+          solution: 'Dim a10, d\nSet a10 = objProject.CDevices.Item(0)\nFor Each d In a10.CDevices\n    If d.ClassName = "Pump" Then\n        If d.Spec("Status").Value = "Reserva" Then Debug.Print d.Name\n    End If\nNext',
           expected: 'P-101B',
-          hint: 'If d.GetAttributeValue("Status") = "Reserva" Then Debug.Print d.Name.' },
+          hint: 'Primeiro If d.ClassName = "Pump" Then, e só dentro dele checa If d.Spec("Status").Value = "Reserva".' },
         { id: 'comos-a4', title: 'Somar potência instalada',
-          promptPt: 'Percorra TODAS as áreas e TODOS os filhos de cada área. Some o atributo "Power" de todo objeto que tiver esse atributo (`.GetAttributeValue("Power")` devolve Nothing quando não existe - teste com `Not IsNull(...)`). Imprima o total.',
-          starter: 'Dim area, d, total\ntotal = 0\nFor Each area In objProject.CDevices\n    For Each d In area.CDevices\n        \' some d.GetAttributeValue("Power") em total quando não for Null\n    Next\nNext\nDebug.Print total',
-          solution: 'Dim area, d, total\ntotal = 0\nFor Each area In objProject.CDevices\n    For Each d In area.CDevices\n        If Not IsNull(d.GetAttributeValue("Power")) Then total = total + d.GetAttributeValue("Power")\n    Next\nNext\nDebug.Print total',
+          promptPt: 'Percorra TODAS as áreas e TODOS os filhos de cada área. Some o atributo "Power" de todo objeto que tiver esse atributo (sem o atributo, `.Attribute("Power")` estoura erro - teste antes com `.Attributes.Count`, ou simplesmente cheque se o `.ClassName` é "Pump" ou "Fan"). Imprima o total.',
+          starter: 'Dim area, d, total\ntotal = 0\nFor Each area In objProject.CDevices\n    For Each d In area.CDevices\n        \' some d.Spec("Power").Value em total quando d for Pump ou Fan\n    Next\nNext\nDebug.Print total',
+          solution: 'Dim area, d, total\ntotal = 0\nFor Each area In objProject.CDevices\n    For Each d In area.CDevices\n        If d.ClassName = "Pump" Or d.ClassName = "Fan" Then total = total + d.Spec("Power").Value\n    Next\nNext\nDebug.Print total',
           expected: '195',
           hint: 'Dois For Each aninhados. 75 (P-101A) + 75 (P-101B) + 45 (FN-201) = 195. Os motores são filhos das bombas, não das áreas.' },
         { id: 'comos-a5', title: 'Caminho completo de um objeto',
